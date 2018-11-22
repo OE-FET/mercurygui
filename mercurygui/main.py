@@ -179,7 +179,7 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
         self.xLim = [-1 - self.x_padding, 0 + self.x_padding]
         self.yLim = [0, 300]
         self.ax1.axis(self.xLim + self.yLim)
-        self.ax2.axis(self.xLim + [-1.08, 1.08])
+        self.ax2.axis(self.xLim + [-0.08, 1.08])
 
         # create line object for temperature graph
         self.lc0 = [0, 0.8, 0.6]  # self.lc0 = [0, 0.64, 0.48]
@@ -369,7 +369,7 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
         # append data for plotting
         self.xData = np.append(self.xData, time.time())
         self.yDataT = np.append(self.yDataT, readings['Temp'])
-        self.yDataG = np.append(self.yDataG, -1*readings['FlowPercent']/100)
+        self.yDataG = np.append(self.yDataG, readings['FlowPercent']/100)
         self.yDataH = np.append(self.yDataH, readings['HeaterPercent']/100)
 
         # prevent data vector from exceeding 86400 entries
@@ -447,7 +447,7 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
             self.canvas.update()
         else:
             self.ax1.axis(xLimNew + yLimNew)
-            self.ax2.axis(xLimNew + [-1.08, 1.08])
+            self.ax2.axis(xLimNew + [-0.08, 1.08])
             self.canvas.draw()
 
         # update label
