@@ -64,7 +64,7 @@ class MercuryPlotCanvas(FigureCanvas):
 
         with mpl.style.context(['default', MPL_STYLE_PATH]):
             d = {'height_ratios': [5, 1], 'hspace': 0, 'bottom': 0.07,
-                 'top': 0.97, 'left': 0.08, 'right': 0.95}
+                 'top': 0.97, 'left': 0.075, 'right': 0.95}
             self.ax1, self.ax2 = self.figure.subplots(2, sharex=True, gridspec_kw=d)
 
         self.ax1.tick_params(axis='both', which='major', direction='out',
