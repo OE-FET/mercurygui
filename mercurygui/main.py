@@ -24,6 +24,7 @@ from math import ceil, floor
 from qtpy import QtGui, QtCore, QtWidgets, uic
 import matplotlib as mpl
 from matplotlib.figure import Figure
+from matplotlib.gridspec import GridSpec
 from matplotlib.backends.backend_qt5agg import (FigureCanvasQTAgg
                                                 as FigureCanvas,
                                                 NavigationToolbar2QT as
@@ -61,11 +62,12 @@ class MercuryPlotCanvas(FigureCanvas):
             figure = Figure(facecolor='None')
 
         FigureCanvas.__init__(self, figure)
+        self.gs = GridSpec(2, 1, hspace=0, height_ratios=[5, 1],
+                           top=0.97, bottom=0.07, left=0.075, right=0.95)
 
         with mpl.style.context(['default', MPL_STYLE_PATH]):
-            d = {'height_ratios': [5, 1], 'hspace': 0, 'bottom': 0.07,
-                 'top': 0.97, 'left': 0.075, 'right': 0.95}
-            self.ax1, self.ax2 = self.figure.subplots(2, sharex=True, gridspec_kw=d)
+            self.ax1 = self.figure.add_subplot(self.gs[0])
+            self.ax2 = self.figure.add_subplot(self.gs[1], sharex=self.ax1)
 
         self.ax1.tick_params(axis='both', which='major', direction='out',
                              labelcolor='black', color='gray', labelsize=9)
