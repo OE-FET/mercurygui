@@ -63,7 +63,7 @@ class MercuryPlotCanvas(FigureCanvas):
 
         FigureCanvas.__init__(self, figure)
         self.gs = GridSpec(2, 1, hspace=0, height_ratios=[5, 1],
-                           top=0.97, bottom=0.07, left=0.075, right=0.95)
+                           top=0.97, bottom=0.07, left=0.075, right=0.93)
 
         with mpl.style.context(['default', MPL_STYLE_PATH]):
             self.ax1 = self.figure.add_subplot(self.gs[0])
