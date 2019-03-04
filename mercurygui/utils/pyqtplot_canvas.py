@@ -18,8 +18,7 @@ class MyAxisItem(AxisItem):
     def setTextPen(self, *args, **kwargs):
         """
         Set the pen used for drawing text.
-        If no arguments are given, the default foreground color will be used
-        (see :func:`setConfigOption <pyqtgraph.setConfigOption>`).
+        If no arguments are given, the default foreground color will be used.
         """
         self.picture = None
         if args or kwargs:
@@ -197,7 +196,7 @@ class TemperatureHistoryPlot(GraphicsView):
         self.p0.vb.suggestPadding = lambda x: 0.002
         self.p1.vb.suggestPadding = lambda x: 0.002
 
-        # enable downsampling and clipping to improve performance
+        # enable down sampling and clipping to improve performance
         self.p0.setDownsampling(ds=True, auto=True, mode='peak')
         self.p0.setClipToView(True)
 
@@ -240,20 +239,3 @@ class TemperatureHistoryPlot(GraphicsView):
 if __name__ == '__main__!':
     view = TemperatureHistoryPlot()
     view.show()
-
-    from qtpy import QtWidgets
-    text = 'Please select file with temperature sweep data:'
-    filepath, _selfilter = QtWidgets.QFileDialog.getOpenFileName(caption=text)
-
-    with open(filepath) as f:
-        info_string = f.readline().strip()
-        header = f.readline().strip()
-
-    data_matrix = np.loadtxt(filepath, skiprows=2)
-    xdata = np.array(data_matrix[:, 0])
-    xdata_zero = (xdata - max(xdata)) / 60.0
-    ydata_tmpr = np.array(data_matrix[:, 1])
-    ydata_htr = np.array(data_matrix[:, 2])
-    ydata_gflw = np.array(data_matrix[:, 3])
-
-    view.update_plot(xdata_zero, ydata_tmpr, ydata_gflw, ydata_htr, min(xdata_zero))
