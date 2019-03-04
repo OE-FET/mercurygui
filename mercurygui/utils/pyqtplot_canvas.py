@@ -4,6 +4,7 @@ from pyqtgraph import AxisItem, PlotItem, GraphicsView
 from pyqtgraph import getConfigOption
 from pyqtgraph import functions as fn
 import numpy as np
+from qtpy import QtWidgets
 
 
 class MyAxisItem(AxisItem):
@@ -139,7 +140,7 @@ class TemperatureHistoryPlot(GraphicsView):
 
         # create layout
         self.layout = pg.GraphicsLayout()
-        self.layout.setContentsMargins(10, 0, 10, 0)
+        self.layout.setContentsMargins(0, 0, 0, 0)
         self.layout.setSpacing(-1.)
         self.layout.layout.setRowPreferredHeight(1, 200)
         self.layout.layout.setRowPreferredHeight(2, 20)
@@ -160,43 +161,57 @@ class TemperatureHistoryPlot(GraphicsView):
         self.layout.addItem(self.p0, 0, 0, 5, 1)
         self.layout.addItem(self.p1, 5, 0, 1, 1)
 
+        # estimate maximum width of x-labels and set axis width accordingly
+        label = QtWidgets.QLabel('299.9')
+        text_width = label.fontMetrics().boundingRect(label.text()).width()
+
         for p in [self.p0, self.p1]:
             p.vb.setBackgroundColor('w')
-            p.setContentsMargins(0., 0., 0., 0.)
+            p.setContentsMargins(1., 0., 1., 0.)
             for pos in ['bottom', 'left', 'top', 'right']:
                 ax = p.getAxis(pos)
                 ax.setZValue(0)  # draw on top of patch
                 ax.setVisible(True)  # make all axes visible
                 ax.setPen(width=1.5, color=0.5)  # grey spines and ticks
                 ax.setTextPen('k')  # black text
-                ax.setStyle(maxTickLevel=1, autoExpandTextSpace=False, tickTextOffset=5)
+                ax.setStyle(maxTickLevel=1, autoExpandTextSpace=False,
+                            tickTextOffset=4)
+                if pos in ['left', 'right']:
+                    ax.setStyle(tickTextWidth=text_width)
 
             p.getAxis('top').setTicks([])
             p.getAxis('right').setTicks([])
 
+        # get total axis width and make accessible to the outside
+        self.y_axis_width = self.p0.getAxis('left').maximumWidth() + 1
+
+        # set visibility and width of axes
         self.p0.getAxis('bottom').setVisible(False)
         self.p0.getAxis('bottom').setHeight(0)
+        self.p1.getAxis('left').setTicks([])
+        self.p1.getAxis('top').setHeight(0)
+
+        # set auto range and mouse panning / zooming
+        self.p0.enableAutoRange(x=False, y=True)
+        self.p1.enableAutoRange(x=False, y=False)
+        self.p0.setMouseEnabled(x=True, y=True)
+        self.p1.setMouseEnabled(x=True, y=False)
+
+        # set default ranges to start
+        self.p0.setXRange(self.get_xmin(), round(-0.002*self.get_xmin(), 4))
         self.p0.setYRange(5, 300)
         self.p0.setLimits(yMin=0)
-
-        self.p0.enableAutoRange(x=False, y=True)
-        self.p1.setMouseEnabled(x=True, y=True)
-
-        self.p1.getAxis('top').setHeight(0)
-        self.p1.getAxis('left').setTicks([])
         self.p1.setYRange(-0.02, 1.02)
         self.p1.setLimits(yMin=-0.02, yMax=1.02)
 
-        self.p1.enableAutoRange(x=False, y=False)
-        self.p1.setMouseEnabled(x=True, y=False)
-
+        # link x-axes
         self.p1.setXLink(self.p0)
-        self.p0.setXRange(self.get_xmin(), round(-0.002*self.get_xmin(), 4))
 
+        # override default padding with constant 0.2% padding
         self.p0.vb.suggestPadding = lambda x: 0.002
         self.p1.vb.suggestPadding = lambda x: 0.002
 
-        # enable down sampling and clipping to improve performance
+        # enable downsampling and clipping to improve plot performance
         self.p0.setDownsampling(ds=True, auto=True, mode='peak')
         self.p0.setClipToView(True)
 

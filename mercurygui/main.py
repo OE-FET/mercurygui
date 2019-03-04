@@ -52,9 +52,14 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
         self.statusbar.addPermanentWidget(self.led)
         self.led.setChecked(False)
 
-        # set up figure for plotting
+        # set up temperature plot, adjust window margins accordingly
         self.canvas = TemperatureHistoryPlot()
         self.gridLayoutCanvas.addWidget(self.canvas)
+        w = self.canvas.y_axis_width
+        self.gridLayoutTop.setContentsMargins(w, 0, w, 0)
+        self.gridLayoutBottom.setContentsMargins(w, 0, w, 0)
+
+        # connect slider to plot
         self.horizontalSlider.valueChanged.connect(self.on_slider_changed)
 
         # adapt text edit colors to graph colors
@@ -88,9 +93,9 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
         self.feed.connected_signal.connect(self.update_gui_connection)
 
         # get new readings when available, send as out signals
-        self.feed.new_readings_signal.connect(self.fetch_readings)
+        self.feed.new_readings_signal.connect(self.update_text)
         # update plot when new data arrives
-        self.feed.new_readings_signal.connect(self.on_new_readings)
+        self.feed.new_readings_signal.connect(self.update_plot)
         # check for overheating when new data arrives
         self.feed.new_readings_signal.connect(self._check_overheat)
 
@@ -204,7 +209,7 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
         self.statusbar.showMessage('%s' % text)
 
     @QtCore.Slot(object)
-    def fetch_readings(self, readings):
+    def update_text(self, readings):
         """
         Parses readings for the MercuryMonitorApp and updates UI accordingly
         """
@@ -235,7 +240,7 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
         self.r2_checkbox.setChecked(is_ramp_enable)
 
     @QtCore.Slot(object)
-    def on_new_readings(self, readings):
+    def update_plot(self, readings):
         # append data for plotting
         self.xdata = np.append(self.xdata, time.time())
         self.ydata_tmpr = np.append(self.ydata_tmpr, readings['Temp'])
