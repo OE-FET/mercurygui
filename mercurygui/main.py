@@ -529,7 +529,7 @@ class ReadingsOverview(QtWidgets.QDialog):
             self.tabWidget.currentWidget().get_alarms()
 
 
-def run():
+def run(test_data=''):
 
     from mercuryitc import MercuryITC
     from mercurygui.config.main import CONF
@@ -546,8 +546,18 @@ def run():
     mercury_gui = MercuryMonitorApp(feed)
     mercury_gui.show()
 
+    if test_data != '':
+        data_matrix = np.loadtxt(test_data, skiprows=2)
+        mercury_gui.xdata = np.array(data_matrix[:, 0])
+        mercury_gui.ydata_tmpr = np.array(data_matrix[:, 1])
+        mercury_gui.ydata_htr = np.array(data_matrix[:, 2])
+        mercury_gui.ydata_gflw = np.array(data_matrix[:, 3])
+        mercury_gui.xdata_zero = (mercury_gui.xdata - max(mercury_gui.xdata)) / 60.0
+
+        mercury_gui.update_plot()
+
     app.exec_()
 
 
 if __name__ == '__main__':
-    run()
+    run('/Users/samschott/Documents/Python/PopulateGUI/temperature_log 2019-02-13_22-35-23.txt')

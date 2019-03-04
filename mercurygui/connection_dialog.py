@@ -92,7 +92,7 @@ class ConnectionDialog(QtWidgets.QDialog):
         # TODO: this needs testing
         if self.instr.connected:
             self.instr.disconnect()
-            time.sleep(0.2)  # wait for pending comminication to finish
+            time.sleep(0.2)  # wait for pending communication to finish
 
         self.instr.rm.close()
 

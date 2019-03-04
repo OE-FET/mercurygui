@@ -139,7 +139,7 @@ class TemperatureHistoryPlot(GraphicsView):
 
         # create layout
         self.layout = pg.GraphicsLayout()
-        self.layout.setContentsMargins(0, 5, 0, 5)
+        self.layout.setContentsMargins(10, 0, 10, 0)
         self.layout.setSpacing(-1.)
         self.layout.layout.setRowPreferredHeight(1, 100)
         self.layout.layout.setRowPreferredHeight(2, 15)
@@ -236,6 +236,15 @@ class TemperatureHistoryPlot(GraphicsView):
         return self._xmin
 
 
-if __name__ == '__main__!':
+if __name__ == '__main__':
+
+    import sys
+    from qtpy import QtWidgets
+
+    app = QtWidgets.QApplication(sys.argv)
+    app.aboutToQuit.connect(app.deleteLater)
+
     view = TemperatureHistoryPlot()
     view.show()
+
+    app.exec_()
