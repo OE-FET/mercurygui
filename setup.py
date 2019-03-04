@@ -24,9 +24,8 @@ setup(
     },
     install_requires=[
         'mercuryitc',
-        'matplotlib',
         'numpy',
-        'pyvisa',
+        'pyqtgraph',
         'qtpy',
         'repr',
         'setuptools',

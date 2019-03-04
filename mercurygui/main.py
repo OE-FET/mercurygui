@@ -20,157 +20,19 @@ import pkg_resources as pkgr
 import time
 import numpy as np
 import logging
-from math import ceil, floor
 from qtpy import QtGui, QtCore, QtWidgets, uic
-import matplotlib as mpl
-from matplotlib.figure import Figure
-from matplotlib.gridspec import GridSpec
-from matplotlib.backends.backend_qt5agg import (FigureCanvasQTAgg
-                                                as FigureCanvas,
-                                                NavigationToolbar2QT as
-                                                NavigationToolbar)
 
 # local imports
 from mercurygui.feed import MercuryFeed
 from mercurygui.connection_dialog import ConnectionDialog
 from mercurygui.utils.led_indicator_widget import LedIndicator
+from mercurygui.utils.pyqtplot_canvas import TemperatureHistoryPlot
 from mercurygui.config.main import CONF
 
 MPL_STYLE_PATH = pkgr.resource_filename('mercurygui', 'figure_style.mplstyle')
 MAIN_UI_PATH = pkgr.resource_filename('mercurygui', 'main.ui')
 
 logger = logging.getLogger(__name__)
-
-
-class MercuryPlotCanvas(FigureCanvas):
-    """
-    Matplotlib FigureCanvas for plotting the temperature, gas flow, and
-    heater level vs time.
-    """
-
-    GREEN = np.array([0, 204, 153]) / 255
-    BLUE = np.array([100, 171, 246]) / 255
-    RED = np.array([221, 61, 53]) / 255
-
-    LIGHT_BLUE = np.append(BLUE, 0.2)  # add alpha value of 0.2
-    LIGHT_RED = np.append(RED, 0.2)  # add alpha value of 0.2
-
-    def __init__(self, parent=None):
-
-        # create figure and set axis labels
-        with mpl.style.context(['default', MPL_STYLE_PATH]):
-            figure = Figure(facecolor='None')
-
-        FigureCanvas.__init__(self, figure)
-        self.gs = GridSpec(2, 1, hspace=0, height_ratios=[5, 1],
-                           top=0.97, bottom=0.07, left=0.075, right=0.93)
-
-        with mpl.style.context(['default', MPL_STYLE_PATH]):
-            self.ax1 = self.figure.add_subplot(self.gs[0])
-            self.ax2 = self.figure.add_subplot(self.gs[1], sharex=self.ax1)
-
-        self.ax1.tick_params(axis='both', which='major', direction='out',
-                             labelcolor='black', color='gray', labelsize=9)
-        self.ax2.tick_params(axis='both', which='major', direction='out',
-                             labelcolor='black', color='gray', labelsize=9)
-
-        self.ax2.spines['top'].set_alpha(0.4)
-
-        self.ax1.xaxis.set_visible(False)
-        self.ax2.xaxis.set_visible(True)
-        self.ax2.yaxis.set_visible(False)
-
-        self.x_pad = 0.7/100
-        self.xLim = [-1 - self.x_pad, 0 + self.x_pad]
-        self.yLim = [0, 300]
-        self.ax1.axis(self.xLim + self.yLim)
-        self.ax2.axis(self.xLim + [-0.08, 1.08])
-
-        self.line_t, = self.ax1.plot(0, 295, '-', linewidth=1.1,
-                                     color=self.GREEN)
-
-        self.fill1 = self.ax2.fill_between([0, ], [0, ],
-                                           facecolor=self.LIGHT_BLUE,
-                                           edgecolor=self.BLUE)
-        self.fill2 = self.ax2.fill_between([0, ], [0, ],
-                                           facecolor=self.LIGHT_RED,
-                                           edgecolor=self.RED)
-
-        self.dpts = 1000  # maximum number of data points to plot
-
-        self.setParent(parent)
-        self.setStyleSheet("background-color:transparent;")
-
-        FigureCanvas.setSizePolicy(self, QtWidgets.QSizePolicy.Expanding,
-                                   QtWidgets.QSizePolicy.Expanding)
-
-        FigureCanvas.updateGeometry(self)
-
-    def update_plot(self, x_data, y_data_t, y_data_g, y_data_h, x_min):
-
-        # slice to reduce number of points to `dpts`
-        step_size = max([x_data.shape[0]/self.dpts, 1])
-        step_size = int(step_size)
-        self.current_xdata = x_data[::step_size]
-        self.current_ydata_tmpr = y_data_t[::step_size]
-        self.current_ydata_gflw = y_data_g[::step_size]
-        self.current_ydata_htr = y_data_h[::step_size]
-
-        # set smallest displayed data point to slider value
-        # interpolate if necessary
-        if self.current_xdata[0] < x_min:
-            self.current_xdata[0] = x_min
-            self.current_ydata_tmpr[0] = np.interp(x_min, self.current_xdata[0:1],
-                                                   self.current_ydata_tmpr[0:1])
-
-        # update axis limits
-        if not self.current_xdata.size == 0:
-            x_pad_abs = max(self.x_pad * abs(x_min), 1/10000)  # add padding
-            x_lim_new = [x_min - x_pad_abs, x_pad_abs]
-
-            y_lim_new = [floor(self.current_ydata_tmpr.min()) - 2.2,
-                         ceil(self.current_ydata_tmpr.max()) + 3.2]
-        else:
-            x_lim_new, y_lim_new = self.xLim, self.yLim
-
-        self.line_t.set_data(self.current_xdata, self.current_ydata_tmpr)
-
-        self.fill1.remove()
-        self.fill2.remove()
-
-        self.fill1 = self.ax2.fill_between(self.current_xdata,
-                                           self.current_ydata_gflw, 0,
-                                           facecolor=self.LIGHT_BLUE,
-                                           edgecolor=self.BLUE)
-        self.fill2 = self.ax2.fill_between(self.current_xdata,
-                                           self.current_ydata_htr, 0,
-                                           facecolor=self.LIGHT_RED,
-                                           edgecolor=self.RED)
-
-        if x_lim_new + y_lim_new == self.xLim + self.yLim:
-            # redraw only lines
-
-            for ax in self.figure.axes:
-                # redraw plot backgrounds (to remove old lines)
-                ax.draw_artist(ax.patch)
-                # redraw spines
-                for spine in ax.spines.values():
-                    ax.draw_artist(spine)
-
-            self.ax1.draw_artist(self.line_t)
-            self.ax2.draw_artist(self.fill1)
-            self.ax2.draw_artist(self.fill2)
-
-            self.update()
-        else:
-            # redraw the whole plot
-            self.ax1.axis(x_lim_new + y_lim_new)
-            self.ax2.axis(x_lim_new + [-0.08, 1.08])
-            self.draw()
-
-        # cache axis limits
-        self.xLim = x_lim_new
-        self.yLim = y_lim_new
 
 
 class MercuryMonitorApp(QtWidgets.QMainWindow):
@@ -191,21 +53,16 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
         self.led.setChecked(False)
 
         # set up figure for plotting
-        self.canvas = MercuryPlotCanvas(self)
+        self.canvas = TemperatureHistoryPlot()
         self.gridLayoutCanvas.addWidget(self.canvas)
-        self.canvas.draw()
+        self.horizontalSlider.valueChanged.connect(self.on_slider_changed)
 
         # adapt text edit colors to graph colors
-        self.t1_reading.setStyleSheet('color:rgb%s' % str(tuple(self.canvas.GREEN*255)))
-        self.gf1_edit.setStyleSheet('color:rgb%s' % str(tuple(self.canvas.BLUE*255)))
-        self.h1_edit.setStyleSheet('color:rgb%s' % str(tuple(self.canvas.RED*255)))
-        self.gf1_unit.setStyleSheet('color:rgb%s' % str(tuple(self.canvas.BLUE*255)))
-        self.h1_unit.setStyleSheet('color:rgb%s' % str(tuple(self.canvas.RED*255)))
-
-        # allow panning of plot
-        self.toolbar = NavigationToolbar(self.canvas, self)
-        self.toolbar.hide()
-        self.toolbar.pan()
+        self.t1_reading.setStyleSheet('color:rgb%s' % str(tuple(self.canvas.GREEN)))
+        self.gf1_edit.setStyleSheet('color:rgb%s' % str(tuple(self.canvas.BLUE)))
+        self.h1_edit.setStyleSheet('color:rgb%s' % str(tuple(self.canvas.RED)))
+        self.gf1_unit.setStyleSheet('color:rgb%s' % str(tuple(self.canvas.BLUE)))
+        self.h1_unit.setStyleSheet('color:rgb%s' % str(tuple(self.canvas.RED)))
 
         # set up data vectors for plot
         self.xdata = np.array([])
@@ -233,7 +90,7 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
         # get new readings when available, send as out signals
         self.feed.new_readings_signal.connect(self.fetch_readings)
         # update plot when new data arrives
-        self.feed.new_readings_signal.connect(self.update_plot_data)
+        self.feed.new_readings_signal.connect(self.on_new_readings)
         # check for overheating when new data arrives
         self.feed.new_readings_signal.connect(self._check_overheat)
 
@@ -283,6 +140,18 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
         self.modulesAction.setEnabled(False)
         self.readingsAction.setEnabled(False)
 
+    def on_slider_changed(self):
+        # determine first plotted data point
+        if self.xdata.size == 0:
+            x_min = -self.horizontalSlider.value()
+        else:
+            x_min = max(-self.horizontalSlider.value(), self.xdata_zero[0])
+
+        self.timeLabel.setText('Show last %s min' % self.horizontalSlider.value())
+        self.canvas.set_xmin(x_min)
+        self.canvas.p0.autoBtnClicked()
+        self.canvas.p1.autoBtnClicked()
+
     @QtCore.Slot(bool)
     def update_gui_connection(self, connected):
         if connected:
@@ -304,9 +173,6 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
             self.h1_edit.returnPressed.connect(self.change_heater)
             self.h2_checkbox.clicked.connect(self.change_heater_auto)
 
-            # set update_plot to be executed every time the slider position changes
-            self.horizontalSlider.valueChanged.connect(self.update_plot)
-
         elif not connected:
             self.display_error('Connection lost.')
             logger.info('Connection to MercuryiTC lost.')
@@ -326,9 +192,6 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
             self.gf2_checkbox.clicked.disconnect(self.change_flow_auto)
             self.h1_edit.returnPressed.disconnect(self.change_heater)
             self.h2_checkbox.clicked.disconnect(self.change_heater_auto)
-
-            # disconnect update_plot
-            self.horizontalSlider.valueChanged.disconnect(self.update_plot)
 
     def set_input_validators(self):
         """ Sets validators for input fields"""
@@ -375,14 +238,14 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
         self.r2_checkbox.setChecked(is_ramp_enable)
 
     @QtCore.Slot(object)
-    def update_plot_data(self, readings):
+    def on_new_readings(self, readings):
         # append data for plotting
         self.xdata = np.append(self.xdata, time.time())
         self.ydata_tmpr = np.append(self.ydata_tmpr, readings['Temp'])
         self.ydata_gflw = np.append(self.ydata_gflw, readings['FlowPercent'] / 100)
         self.ydata_htr = np.append(self.ydata_htr, readings['HeaterPercent'] / 100)
 
-        # prevent data vector from exceeding 86400 entries
+        # prevent data vector from exceeding 86400 entries (~24h)
         self.xdata = self.xdata[-86400:]
         self.ydata_tmpr = self.ydata_tmpr[-86400:]
         self.ydata_gflw = self.ydata_gflw[-86400:]
@@ -395,26 +258,16 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
 
     @QtCore.Slot()
     def update_plot(self):
-
-        # select data to be plotted
-        x_slice = self.xdata_zero >= -self.horizontalSlider.value()
-        self.current_xdata = self.xdata_zero[x_slice]
-        self.current_ydata_tmpr = self.ydata_tmpr[x_slice]
-        self.current_ydata_gflw = self.ydata_gflw[x_slice]
-        self.current_ydata_htr = self.ydata_htr[x_slice]
-
         # determine first plotted data point
-        if self.current_xdata.size == 0:
+        if self.xdata.size == 0:
             x_min = -self.horizontalSlider.value()
         else:
-            x_min = max(-self.horizontalSlider.value(), self.current_xdata[0])
+            x_min = max(-self.horizontalSlider.value(), self.xdata_zero[0])
 
         # update plot
-        self.canvas.update_plot(self.current_xdata, self.current_ydata_tmpr,
-                                self.current_ydata_gflw, self.current_ydata_htr, x_min)
-
-        # update label
-        self.timeLabel.setText('Show last %s min' % self.horizontalSlider.value())
+        self.canvas.update_data(self.xdata_zero, self.ydata_tmpr,
+                                self.ydata_gflw, self.ydata_htr)
+        self.canvas.set_xmin(x_min)
 
 # =================== LOGGING DATA ============================================
 
