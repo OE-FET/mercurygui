@@ -142,13 +142,10 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
 
     def on_slider_changed(self):
         # determine first plotted data point
-        if self.xdata.size == 0:
-            x_min = -self.horizontalSlider.value()
-        else:
-            x_min = max(-self.horizontalSlider.value(), self.xdata_zero[0])
+        sv = self.horizontalSlider.value()
 
-        self.timeLabel.setText('Show last %s min' % self.horizontalSlider.value())
-        self.canvas.set_xmin(x_min)
+        self.timeLabel.setText('Show last %s min' % sv)
+        self.canvas.set_xmin(-sv)
         self.canvas.p0.autoBtnClicked()
         self.canvas.p1.autoBtnClicked()
 
@@ -254,20 +251,9 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
         # convert xData to minutes and set current time to t = 0
         self.xdata_zero = (self.xdata - max(self.xdata)) / 60
 
-        self.update_plot()
-
-    @QtCore.Slot()
-    def update_plot(self):
-        # determine first plotted data point
-        if self.xdata.size == 0:
-            x_min = -self.horizontalSlider.value()
-        else:
-            x_min = max(-self.horizontalSlider.value(), self.xdata_zero[0])
-
         # update plot
         self.canvas.update_data(self.xdata_zero, self.ydata_tmpr,
                                 self.ydata_gflw, self.ydata_htr)
-        self.canvas.set_xmin(x_min)
 
 # =================== LOGGING DATA ============================================
 
@@ -554,7 +540,8 @@ def run(test_data=''):
         mercury_gui.ydata_gflw = np.array(data_matrix[:, 3])
         mercury_gui.xdata_zero = (mercury_gui.xdata - max(mercury_gui.xdata)) / 60.0
 
-        mercury_gui.update_plot()
+        mercury_gui.canvas.update_data(mercury_gui.xdata_zero, mercury_gui.ydata_tmpr,
+                                       mercury_gui.ydata_gflw, mercury_gui.ydata_htr)
 
     app.exec_()
 

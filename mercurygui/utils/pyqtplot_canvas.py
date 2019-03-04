@@ -141,8 +141,8 @@ class TemperatureHistoryPlot(GraphicsView):
         self.layout = pg.GraphicsLayout()
         self.layout.setContentsMargins(10, 0, 10, 0)
         self.layout.setSpacing(-1.)
-        self.layout.layout.setRowPreferredHeight(1, 100)
-        self.layout.layout.setRowPreferredHeight(2, 15)
+        self.layout.layout.setRowPreferredHeight(1, 200)
+        self.layout.layout.setRowPreferredHeight(2, 20)
         self.setBackground(None)
         self.setCentralItem(self.layout)
 
