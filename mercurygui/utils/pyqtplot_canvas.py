@@ -215,6 +215,7 @@ class TemperatureHistoryPlot(GraphicsView):
         # set default ranges to start
         self.p0.setXRange(self.get_xmin(), round(-0.002*self.get_xmin(), 4))
         self.p0.setYRange(5, 300)
+        self.p0.setLimits(yMin=0, yMax=500)
         self.p0.setLimits(yMin=0)
         self.p1.setYRange(-0.02, 1.02)
         self.p1.setLimits(yMin=-0.02, yMax=1.02)
