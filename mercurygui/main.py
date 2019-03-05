@@ -29,7 +29,6 @@ from mercurygui.utils.led_indicator_widget import LedIndicator
 from mercurygui.utils.pyqtplot_canvas import TemperatureHistoryPlot
 from mercurygui.config.main import CONF
 
-MPL_STYLE_PATH = pkgr.resource_filename('mercurygui', 'figure_style.mplstyle')
 MAIN_UI_PATH = pkgr.resource_filename('mercurygui', 'main.ui')
 
 logger = logging.getLogger(__name__)

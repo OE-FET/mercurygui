@@ -254,7 +254,6 @@ class TemperatureHistoryPlot(GraphicsView):
 if __name__ == '__main__':
 
     import sys
-    from qtpy import QtWidgets
 
     app = QtWidgets.QApplication(sys.argv)
     app.aboutToQuit.connect(app.deleteLater)
