@@ -6,6 +6,8 @@ from pyqtgraph import functions as fn
 import numpy as np
 from qtpy import QtWidgets
 
+pg.setConfigOptions(antialias=True)
+
 
 class MyAxisItem(AxisItem):
 
@@ -228,10 +230,10 @@ class TemperatureHistoryPlot(GraphicsView):
         self.p1.vb.suggestPadding = lambda x: 0.002
 
         # enable downsampling and clipping to improve plot performance
-        self.p0.setDownsampling(ds=True, auto=True, mode='peak')
+        self.p0.setDownsampling(ds=True, auto=True, mode='subsample')
         self.p0.setClipToView(True)
 
-        self.p1.setDownsampling(ds=True, auto=True, mode='peak')
+        self.p1.setDownsampling(ds=True, auto=True, mode='subsample')
         self.p1.setClipToView(True)
 
         # create plot items
