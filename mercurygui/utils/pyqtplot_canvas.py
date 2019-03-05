@@ -108,6 +108,21 @@ class MyAxisItem(AxisItem):
 
         p.setPen(pen)
 
+    def _updateMaxTextSize(self, x):
+        # Informs that the maximum tick size orthogonal to the axis has
+        # changed; we use this to decide whether the item needs to be resized
+        # to accomodate.
+        if self.orientation in ['left', 'right']:
+            if x > self.textWidth or x < self.textWidth-10:
+                self.textWidth = x
+                if self.style['autoExpandTextSpace'] is True:
+                    self._updateWidth()
+        else:
+            if x > self.textHeight or x < self.textHeight-10:
+                self.textHeight = x
+                if self.style['autoExpandTextSpace'] is True:
+                    self._updateHeight()
+
 
 class MyPlotItem(PlotItem):
 
