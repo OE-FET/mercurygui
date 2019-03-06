@@ -62,11 +62,11 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
         self.horizontalSlider.valueChanged.connect(self.on_slider_changed)
 
         # adapt text edit colors to graph colors
-        self.t1_reading.setStyleSheet('color:rgb%s' % str(tuple(self.canvas.GREEN)))
-        self.gf1_edit.setStyleSheet('color:rgb%s' % str(tuple(self.canvas.BLUE)))
-        self.h1_edit.setStyleSheet('color:rgb%s' % str(tuple(self.canvas.RED)))
-        self.gf1_unit.setStyleSheet('color:rgb%s' % str(tuple(self.canvas.BLUE)))
-        self.h1_unit.setStyleSheet('color:rgb%s' % str(tuple(self.canvas.RED)))
+        self.t1_reading.setStyleSheet('color:rgb%s' % str(self.canvas.GREEN))
+        self.gf1_edit.setStyleSheet('color:rgb%s' % str(self.canvas.BLUE))
+        self.h1_edit.setStyleSheet('color:rgb%s' % str(self.canvas.RED))
+        self.gf1_unit.setStyleSheet('color:rgb%s' % str(self.canvas.BLUE))
+        self.h1_unit.setStyleSheet('color:rgb%s' % str(self.canvas.RED))
 
         # set up data vectors for plot
         self.xdata = np.array([])

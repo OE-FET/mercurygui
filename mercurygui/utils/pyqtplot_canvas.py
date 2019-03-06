@@ -142,12 +142,12 @@ class MyPlotItem(PlotItem):
 
 class TemperatureHistoryPlot(GraphicsView):
 
-    GREEN = [0, 204, 153]
-    BLUE = [100, 171, 246]
-    RED = [221, 61, 53]
+    GREEN = (0, 204, 153)
+    BLUE = (100, 171, 246)
+    RED = (221, 61, 53)
 
-    LIGHT_BLUE = BLUE + [51]
-    LIGHT_RED = RED + [51]
+    LIGHT_BLUE = BLUE + (51, )
+    LIGHT_RED = RED + (51, )
 
     if sys.platform == 'darwin':
         LW = 3
@@ -183,7 +183,7 @@ class TemperatureHistoryPlot(GraphicsView):
         self.layout.addItem(self.p1, 5, 0, 1, 1)
 
         # estimate maximum width of x-labels and set axis width accordingly
-        label = QtWidgets.QLabel('299.9')
+        label = QtWidgets.QLabel('299')
         text_width = label.fontMetrics().boundingRect(label.text()).width()
 
         for p in [self.p0, self.p1]:
@@ -198,7 +198,7 @@ class TemperatureHistoryPlot(GraphicsView):
                 ax.setStyle(maxTickLevel=1, autoExpandTextSpace=False,
                             tickTextOffset=4)
                 if pos in ['left', 'right']:
-                    ax.setStyle(tickTextWidth=text_width)
+                    ax.setStyle(tickTextWidth=text_width + 5)
 
             p.getAxis('top').setTicks([])
             p.getAxis('right').setTicks([])
@@ -221,10 +221,10 @@ class TemperatureHistoryPlot(GraphicsView):
         # set default ranges to start
         self.p0.setXRange(self.get_xmin(), round(-0.002*self.get_xmin(), 4))
         self.p0.setYRange(5, 300)
-        self.p0.setLimits(yMin=0, yMax=500)
+        self.p0.setLimits(yMin=0, yMax=500, minYRange=2.1)
         self.p0.setLimits(yMin=0)
         self.p1.setYRange(-0.02, 1.02)
-        self.p1.setLimits(yMin=-0.02, yMax=1.02)
+        self.p1.setLimits(yMin=-0.02, yMax=1.02, minYRange=1.04)  # enforce axis bounds
 
         # link x-axes
         self.p1.setXLink(self.p0)
