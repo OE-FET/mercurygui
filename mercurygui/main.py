@@ -42,6 +42,14 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
 
         self.feed = feed
 
+        # sent Title font size relative to the system's default size
+        scaling = 1.5
+        font = self.labelTitle.font()
+        defaultFontSize = QtWidgets.QLabel('test').font().pointSize()
+        fontSize = round(defaultFontSize*scaling, 1)
+        font.setPointSize(fontSize)
+        self.labelTitle.setFont(font)
+
         # create popup Widgets
         self.connection_dialog = ConnectionDialog(self, feed.mercury)
         self.readingsWindow = None
