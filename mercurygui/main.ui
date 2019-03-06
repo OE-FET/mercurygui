@@ -356,7 +356,7 @@
    </property>
    <widget class="QMenu" name="menu_MercuryiTC">
     <property name="title">
-     <string>&amp;MercuryiTC</string>
+     <string>MercuryiTC</string>
     </property>
     <addaction name="modulesAction"/>
     <addaction name="readingsAction"/>
@@ -369,7 +369,7 @@
    </widget>
    <widget class="QMenu" name="menu_File">
     <property name="title">
-     <string>&amp;File</string>
+     <string>File</string>
     </property>
     <addaction name="showLogAction"/>
    </widget>
@@ -411,40 +411,25 @@ QStatusBar::item {border: 0px solid black };</string>
    <property name="text">
     <string>&amp;Select Modules...</string>
    </property>
-   <property name="menuRole">
-    <enum>QAction::NoRole</enum>
-   </property>
   </action>
   <action name="readingsAction">
    <property name="text">
     <string>Readings Overview...</string>
-   </property>
-   <property name="menuRole">
-    <enum>QAction::NoRole</enum>
    </property>
   </action>
   <action name="connectAction">
    <property name="text">
     <string>&amp;Connect Mercury</string>
    </property>
-   <property name="menuRole">
-    <enum>QAction::NoRole</enum>
-   </property>
   </action>
   <action name="disconnectAction">
    <property name="text">
     <string>&amp;Disconnect Mercury</string>
    </property>
-   <property name="menuRole">
-    <enum>QAction::NoRole</enum>
-   </property>
   </action>
   <action name="updateAddressAction">
    <property name="text">
     <string>&amp;Connection Settings...</string>
-   </property>
-   <property name="menuRole">
-    <enum>QAction::NoRole</enum>
    </property>
   </action>
   <action name="showLogAction">

@@ -43,7 +43,7 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
         self.feed = feed
 
         # sent Title font size relative to the system's default size
-        scaling = 1.5
+        scaling = 1.8
         font = self.labelTitle.font()
         defaultFontSize = QtWidgets.QLabel('test').font().pointSize()
         fontSize = round(defaultFontSize*scaling, 1)
