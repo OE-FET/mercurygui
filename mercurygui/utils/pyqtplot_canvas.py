@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import sys
 import pyqtgraph as pg
 from pyqtgraph import AxisItem, PlotItem, GraphicsView
 from pyqtgraph import getConfigOption
@@ -148,7 +149,10 @@ class TemperatureHistoryPlot(GraphicsView):
     LIGHT_BLUE = BLUE + [51]
     LIGHT_RED = RED + [51]
 
-    LW = 3
+    if sys.platform == 'darwin':
+        LW = 3
+    else:
+        LW = 1.5
 
     _xmin = -1
 
@@ -189,7 +193,7 @@ class TemperatureHistoryPlot(GraphicsView):
                 ax = p.getAxis(pos)
                 ax.setZValue(0)  # draw on top of patch
                 ax.setVisible(True)  # make all axes visible
-                ax.setPen(width=1.5, color=0.5)  # grey spines and ticks
+                ax.setPen(width=self.LW*2/3, color=0.5)  # grey spines and ticks
                 ax.setTextPen('k')  # black text
                 ax.setStyle(maxTickLevel=1, autoExpandTextSpace=False,
                             tickTextOffset=4)
