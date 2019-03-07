@@ -127,19 +127,6 @@ class MyAxisItem(AxisItem):
                     self._updateHeight()
 
 
-class MyPlotItem(PlotItem):
-
-    x_min = -1.
-
-    def autoBtnClicked(self):
-        if self.autoBtn.mode == 'auto':
-            self.setXRange(self.x_min, round(-0.002*self.x_min, 4))
-            self.enableAutoRange(x=False, y=True)
-            self.autoBtn.hide()
-        else:
-            self.disableAutoRange()
-
-
 class TemperatureHistoryPlot(GraphicsView):
 
     GREEN = (0, 204, 153)
@@ -155,6 +142,7 @@ class TemperatureHistoryPlot(GraphicsView):
         LW = 1.5
 
     _xmin = -1
+    _xmax = round(-0.002*_xmin, 4)
 
     def __init__(self):
         GraphicsView.__init__(self)
@@ -176,8 +164,8 @@ class TemperatureHistoryPlot(GraphicsView):
             axisItems1[pos] = MyAxisItem(orientation=pos, maxTickLength=5)
             axisItems2[pos] = MyAxisItem(orientation=pos, maxTickLength=5)
 
-        self.p0 = MyPlotItem(axisItems=axisItems1)
-        self.p1 = MyPlotItem(axisItems=axisItems2)
+        self.p0 = PlotItem(axisItems=axisItems1)
+        self.p1 = PlotItem(axisItems=axisItems2)
         self.set_xmin(-1.)
         self.layout.addItem(self.p0, 0, 0, 5, 1)
         self.layout.addItem(self.p1, 5, 0, 1, 1)
@@ -213,18 +201,17 @@ class TemperatureHistoryPlot(GraphicsView):
         self.p1.getAxis('top').setHeight(0)
 
         # set auto range and mouse panning / zooming
-        self.p0.enableAutoRange(x=False, y=True)
+        self.p0.enableAutoRange(x=True, y=True)
         self.p1.enableAutoRange(x=False, y=False)
         self.p0.setMouseEnabled(x=True, y=True)
         self.p1.setMouseEnabled(x=True, y=False)
 
         # set default ranges to start
-        self.p0.setXRange(self.get_xmin(), round(-0.002*self.get_xmin(), 4))
+        self.p0.setXRange(self._xmin, self._xmax, 4)
         self.p0.setYRange(5, 300)
-        self.p0.setLimits(yMin=0, yMax=500, minYRange=2.1)
-        self.p0.setLimits(yMin=0)
+        self.p0.setLimits(xMin=self._xmin, xMax=self._xmax, yMin=0, yMax=500, minYRange=2.1)
         self.p1.setYRange(-0.02, 1.02)
-        self.p1.setLimits(yMin=-0.02, yMax=1.02, minYRange=1.04)  # enforce axis bounds
+        self.p1.setLimits(xMin=self._xmin, xMax=self._xmax, yMin=-0.02, yMax=1.02, minYRange=1.04)
 
         # link x-axes
         self.p1.setXLink(self.p0)
@@ -266,8 +253,9 @@ class TemperatureHistoryPlot(GraphicsView):
 
     def set_xmin(self, value):
         self._xmin = value
-        self.p0.x_min = value
-        self.p1.x_min = value
+        self._xmax = round(-0.002*value, 4)
+        self.p0.setLimits(xMin=self._xmin, xMax=self._xmax, yMin=0, yMax=500, minYRange=2.1)
+        self.p1.setLimits(xMin=self._xmin, xMax=self._xmax, yMin=-0.02, yMax=1.02, minYRange=1.04)
 
     def get_xmin(self):
         return self._xmin
