@@ -36,6 +36,8 @@ logger = logging.getLogger(__name__)
 
 class MercuryMonitorApp(QtWidgets.QMainWindow):
 
+    QUIT_ON_CLOSE = True
+
     def __init__(self, feed):
         super(self.__class__, self).__init__()
         uic.loadUi(MAIN_UI_PATH, self)
@@ -132,7 +134,10 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
         self.deleteLater()
 
     def closeEvent(self, event):
-        self.exit_()
+        if self.QUIT_ON_CLOSE:
+            self.exit_()
+        else:
+            self.hide()
 
     def set_up_menubar(self):
         """
