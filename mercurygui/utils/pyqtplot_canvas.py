@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+#!/usr/bin/env python
 import sys
 import pyqtgraph as pg
 from pyqtgraph import AxisItem, PlotItem, GraphicsView
@@ -114,7 +115,7 @@ class MyAxisItem(AxisItem):
     def _updateMaxTextSize(self, x):
         # Informs that the maximum tick size orthogonal to the axis has
         # changed; we use this to decide whether the item needs to be resized
-        # to accomodate.
+        # to accommodate.
         if self.orientation in ['left', 'right']:
             if x > self.textWidth or x < self.textWidth-10:
                 self.textWidth = x
@@ -133,8 +134,8 @@ class TemperatureHistoryPlot(GraphicsView):
     BLUE = (100, 171, 246)
     RED = (221, 61, 53)
 
-    LIGHT_BLUE = BLUE + (51, )
-    LIGHT_RED = RED + (51, )
+    LIGHT_BLUE = BLUE + (51,)
+    LIGHT_RED = RED + (51,)
 
     if sys.platform == 'darwin':
         LW = 3
@@ -161,8 +162,8 @@ class TemperatureHistoryPlot(GraphicsView):
         axisItems2 = dict()
 
         for pos in ['bottom', 'left', 'top', 'right']:
-            axisItems1[pos] = MyAxisItem(orientation=pos, maxTickLength=5)
-            axisItems2[pos] = MyAxisItem(orientation=pos, maxTickLength=5)
+            axisItems1[pos] = MyAxisItem(orientation=pos, maxTickLength=-4)
+            axisItems2[pos] = MyAxisItem(orientation=pos, maxTickLength=-4)
 
         self.p0 = PlotItem(axisItems=axisItems1)
         self.p1 = PlotItem(axisItems=axisItems2)
@@ -191,6 +192,9 @@ class TemperatureHistoryPlot(GraphicsView):
             p.getAxis('top').setTicks([])
             p.getAxis('right').setTicks([])
 
+        # light grey for internal spine
+        self.p1.getAxis('top').setPen(width=self.LW*2/3, color=0.8)
+
         # get total axis width and make accessible to the outside
         self.y_axis_width = self.p0.getAxis('left').maximumWidth() + 1
 
@@ -211,7 +215,7 @@ class TemperatureHistoryPlot(GraphicsView):
         self.p0.setYRange(5, 300)
         self.p0.setLimits(xMin=self._xmin, xMax=self._xmax, yMin=0, yMax=500, minYRange=2.1)
         self.p1.setYRange(-0.02, 1.02)
-        self.p1.setLimits(xMin=self._xmin, xMax=self._xmax, yMin=-0.02, yMax=1.02, minYRange=1.04)
+        self.p1.setLimits(xMin=self._xmin, xMax=self._xmax, yMin=-0.04, yMax=1.04, minYRange=1.08)
 
         # link x-axes
         self.p1.setXLink(self.p0)
@@ -255,7 +259,7 @@ class TemperatureHistoryPlot(GraphicsView):
         self._xmin = value
         self._xmax = round(-0.002*value, 4)
         self.p0.setLimits(xMin=self._xmin, xMax=self._xmax, yMin=0, yMax=500, minYRange=2.1)
-        self.p1.setLimits(xMin=self._xmin, xMax=self._xmax, yMin=-0.02, yMax=1.02, minYRange=1.04)
+        self.p1.setLimits(xMin=self._xmin, xMax=self._xmax, yMin=-0.04, yMax=1.04, minYRange=1.08)
 
     def get_xmin(self):
         return self._xmin

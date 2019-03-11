@@ -543,7 +543,6 @@ def run(test_data=''):
     mercury = MercuryITC(mercury_address, visa_library, open_timeout=1)
 
     app = QtWidgets.QApplication(sys.argv)
-    app.aboutToQuit.connect(app.deleteLater)
 
     feed = MercuryFeed(mercury)
     mercury_gui = MercuryMonitorApp(feed)
