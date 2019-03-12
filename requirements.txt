@@ -1,0 +1,7 @@
+PyQt5
+mercuryitc
+numpy
+pyqtgraph
+qtpy
+repr
+setuptools

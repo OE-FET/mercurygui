@@ -1,0 +1,22 @@
+language: python
+python:
+  - "2.7"
+  - "3.6"
+  - "3.7-dev"
+# command to install dependencies
+install:
+  - pip install -r requirements.txt
+  - pip install .
+# command to run tests
+script:
+  - echo "skipping tests"
+
+deploy:
+  provider: pypi
+  user: SamSchott
+  skip_existing: true
+  password:
+    secure: tKf4M7zwWFnrpPHXAd86gFm8ycA46U26CsN7jQ9UhruLTYC1GnYeJdzT4qgFljkyeJPqZoEZOrE2+xDUQWojGCacAa8IlU0pRo2QmH9p/51qwfszp+DcTXUXOW7Y78m+C+mI0AwCvxcpDAwiS418vGjjiz9dPeWeKiCq1NrvKJ0VtSnN5dSqSiOOR7lRdBakJrf1EfUrxLwvlwozLXaBKUESKadfQh4rrIhibusUE9S9yVfF6niDiRPV5VDaibAh+Zrya0xdruZMzSZFpMRLWBUJB97K06uUsZJ7ctZsuwRJoWkchZ/iWin4NdNr+YGoDaCg+JLs5JA/LqsgfptZ9+tyvLMobpNadoATg4y6UZQAx4yv+fZpzUKvkV8/jSixkwo5Ll2sHsWEzjhVXYB2URSwcMx8eSUgbFPqEg6d1wZXhWFEX1NwQd0fTxplpNNuzbUxo0RsvsrkWUn/KxgMopaNBiRin8oOfTnVgEAeXsToIlnfCdCmUBoI45NPLHLBqWEl0vUJ3PWh/gAAIoQmgG0Z5667g5SGWYUUIBstgqoFay5Qui934//tlxuj7UV+1DwDUaO/kP9pHfAmJLQMP1yXRggoucUwEaQXuWVDk7WQLw6aXeVbTNscvv/H3tL/AGyviWEnx/go0E2O0bb80SMHtU1hdY7xBcdxoOYOwwY=
+
+  on:
+    tags: true
