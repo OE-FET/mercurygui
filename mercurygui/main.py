@@ -75,8 +75,8 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
         self.t1_reading.setStyleSheet('color:rgb%s' % str(self.canvas.GREEN))
         self.gf1_edit.setStyleSheet('color:rgb%s' % str(self.canvas.BLUE))
         self.h1_edit.setStyleSheet('color:rgb%s' % str(self.canvas.RED))
-        self.gf1_unit.setStyleSheet('color:rgb%s' % str(self.canvas.BLUE))
-        self.h1_unit.setStyleSheet('color:rgb%s' % str(self.canvas.RED))
+        self.gf1_edit.setMinimalStep(0.1)
+        self.h1_edit.setMinimalStep(0.1)
 
         # set up data vectors for plot
         self.xdata = np.array([])
@@ -89,8 +89,6 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
         self.restore_geometry()
         # Connect menu bar actions
         self.set_up_menubar()
-        # set input validators for all fields
-        self.set_input_validators()
 
         # check if mercury is connected, connect slots
         self.display_message('Looking for Mercury at %s...' % self.feed.visa_address)
@@ -206,13 +204,6 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
             self.gf2_checkbox.clicked.disconnect(self.change_flow_auto)
             self.h1_edit.returnPressed.disconnect(self.change_heater)
             self.h2_checkbox.clicked.disconnect(self.change_heater_auto)
-
-    def set_input_validators(self):
-        """ Sets validators for input fields"""
-        self.t2_edit.setValidator(QtGui.QDoubleValidator())
-        self.r1_edit.setValidator(QtGui.QDoubleValidator())
-        self.gf1_edit.setValidator(QtGui.QDoubleValidator())
-        self.h1_edit.setValidator(QtGui.QDoubleValidator())
 
     def display_message(self, text):
         self.statusbar.showMessage('%s' % text, 5000)
