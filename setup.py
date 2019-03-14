@@ -26,6 +26,7 @@ setup(
         'mercuryitc',
         'numpy',
         'pyqtgraph',
+        'pyvisa',
         'qtpy',
         'repr',
         'setuptools',
