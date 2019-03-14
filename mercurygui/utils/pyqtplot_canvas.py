@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#!/usr/bin/env python
+
 import sys
 import pyqtgraph as pg
 from pyqtgraph import AxisItem, PlotItem, GraphicsView
@@ -213,9 +213,11 @@ class TemperatureHistoryPlot(GraphicsView):
         # set default ranges to start
         self.p0.setXRange(self._xmin, self._xmax, 4)
         self.p0.setYRange(5, 300)
-        self.p0.setLimits(xMin=self._xmin, xMax=self._xmax, yMin=0, yMax=500, minYRange=2.1)
+        self.p0.setLimits(xMin=self._xmin, xMax=self._xmax,
+                          yMin=0, yMax=500, minYRange=2.1)
         self.p1.setYRange(-0.02, 1.02)
-        self.p1.setLimits(xMin=self._xmin, xMax=self._xmax, yMin=-0.04, yMax=1.04, minYRange=1.08)
+        self.p1.setLimits(xMin=self._xmin, xMax=self._xmax,
+                          yMin=-0.04, yMax=1.04, minYRange=1.08)
 
         # link x-axes
         self.p1.setXLink(self.p0)
@@ -258,8 +260,10 @@ class TemperatureHistoryPlot(GraphicsView):
     def set_xmin(self, value):
         self._xmin = value
         self._xmax = round(-0.002*value, 4)
-        self.p0.setLimits(xMin=self._xmin, xMax=self._xmax, yMin=0, yMax=500, minYRange=2.1)
-        self.p1.setLimits(xMin=self._xmin, xMax=self._xmax, yMin=-0.04, yMax=1.04, minYRange=1.08)
+        self.p0.setLimits(xMin=self._xmin, xMax=self._xmax,
+                          yMin=0, yMax=500, minYRange=2.1)
+        self.p1.setLimits(xMin=self._xmin, xMax=self._xmax,
+                          yMin=-0.04, yMax=1.04, minYRange=1.08)
 
     def get_xmin(self):
         return self._xmin
