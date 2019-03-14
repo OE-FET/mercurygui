@@ -204,12 +204,6 @@ class TemperatureHistoryPlot(GraphicsView):
         self.p1.getAxis('left').setTicks([])
         self.p1.getAxis('top').setHeight(0)
 
-        # set auto range and mouse panning / zooming
-        self.p0.enableAutoRange(x=True, y=True)
-        self.p1.enableAutoRange(x=False, y=False)
-        self.p0.setMouseEnabled(x=True, y=True)
-        self.p1.setMouseEnabled(x=True, y=False)
-
         # set default ranges to start
         self.p0.setXRange(self._xmin, self._xmax, 4)
         self.p0.setYRange(5, 300)
@@ -225,6 +219,12 @@ class TemperatureHistoryPlot(GraphicsView):
         # override default padding with constant 0.2% padding
         self.p0.vb.suggestPadding = lambda x: 0.002
         self.p1.vb.suggestPadding = lambda x: 0.002
+
+        # set auto range and mouse panning / zooming
+        self.p0.enableAutoRange(x=True, y=True)
+        self.p1.enableAutoRange(x=False, y=False)
+        self.p0.setMouseEnabled(x=True, y=True)
+        self.p1.setMouseEnabled(x=True, y=False)
 
         # enable downsampling and clipping to improve plot performance
         self.p0.setDownsampling(ds=True, auto=True, mode='subsample')
