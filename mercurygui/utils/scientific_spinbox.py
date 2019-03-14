@@ -267,7 +267,7 @@ class ScienDSpinBox(QtWidgets.QAbstractSpinBox):
         self.validator = FloatValidator()
         self.errorBox = ErrorBox(self.lineEdit())
         self.lineEdit().textEdited.connect(self.update_value)
-        self.lineEdit().returnPressed.connet(self.returnPressed.emit)
+        self.lineEdit().returnPressed.connect(self.returnPressed.emit)
         self.update_display()
 
     @property
@@ -1022,7 +1022,7 @@ class ScienSpinBox(QtWidgets.QAbstractSpinBox):
         self.validator = IntegerValidator()
         self.errorBox = ErrorBox(self.lineEdit())
         self.lineEdit().textEdited.connect(self.update_value)
-        self.lineEdit().returnPressed.connet(self.returnPressed.emit)
+        self.lineEdit().returnPressed.connect(self.returnPressed.emit)
         self.update_display()
 
     @property
