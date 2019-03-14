@@ -161,8 +161,8 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
 
         self.timeLabel.setText('Show last %s min' % sv)
         self.canvas.set_xmin(-sv)
-        self.canvas.p0.autoBtnClicked()
-        self.canvas.p1.autoBtnClicked()
+        self.canvas.p0.setXRange(-sv, 0)
+        self.canvas.p0.enableAutoRange(x=False, y=True)
 
     @QtCore.Slot(bool)
     def update_gui_connection(self, connected):
@@ -523,19 +523,19 @@ class ReadingsOverview(QtWidgets.QDialog):
             self.tabWidget.currentWidget().get_alarms()
 
 
-def run(test_data=''):
+def run():
 
     from mercuryitc import MercuryITC
     from mercurygui.config.main import CONF
+
+    app = QtWidgets.QApplication(sys.argv)
 
     mercury_address = CONF.get('Connection', 'VISA_ADDRESS')
     visa_library = CONF.get('Connection', 'VISA_LIBRARY')
 
     mercury = MercuryITC(mercury_address, visa_library, open_timeout=1)
-
-    app = QtWidgets.QApplication(sys.argv)
-
     feed = MercuryFeed(mercury)
+
     mercury_gui = MercuryMonitorApp(feed)
     mercury_gui.show()
 

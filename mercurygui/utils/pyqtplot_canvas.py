@@ -227,10 +227,10 @@ class TemperatureHistoryPlot(GraphicsView):
         self.p1.setMouseEnabled(x=True, y=False)
 
         # enable downsampling and clipping to improve plot performance
-        self.p0.setDownsampling(ds=True, auto=True, mode='subsample')
+        self.p0.setDownsampling(auto=True, mode='subsample')
         self.p0.setClipToView(True)
 
-        self.p1.setDownsampling(ds=True, auto=True, mode='subsample')
+        self.p1.setDownsampling(auto=True, mode='subsample')
         self.p1.setClipToView(True)
 
         # create plot items
@@ -244,18 +244,19 @@ class TemperatureHistoryPlot(GraphicsView):
                                    fillLevel=0, fillBrush=self.LIGHT_BLUE)
 
         self.p_htr_0 = self.p1.plot([self.get_xmin(), 0], [0, 0],
-                                    pen=pg.mkPen(self.RED, width=self.LW))
+                                    pen=pg.mkPen(self.RED, width=self.LW),
+                                    autoDownsample=False)
         self.p_gflw_0 = self.p1.plot([self.get_xmin(), 0], [0, 0],
-                                     pen=pg.mkPen(self.BLUE, width=self.LW))
+                                     pen=pg.mkPen(self.BLUE, width=self.LW),
+                                     autoDownsample=False)
 
     def update_data(self, x_data, y_data_t, y_data_g, y_data_h):
         self.p_tempr.setData(x_data, y_data_t)
         self.p_gflw.setData(x_data, y_data_g)
         self.p_htr.setData(x_data, y_data_h)
 
-        y_data_baseline = np.zeros_like(x_data)
-        self.p_htr_0.setData(x_data, y_data_baseline)
-        self.p_htr_0.setData(x_data, y_data_baseline)
+        self.p_htr_0.setData([min(x_data), 0], [0, 0])
+        self.p_gflw_0.setData([min(x_data), 0], [0, 0])
 
     def set_xmin(self, value):
         self._xmin = value
