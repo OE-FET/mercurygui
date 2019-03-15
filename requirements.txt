@@ -1,8 +1,8 @@
 PyQt5
+PyVISA
 mercuryitc
 numpy
 pyqtgraph
-pyvisa
 qtpy
 repr
 setuptools

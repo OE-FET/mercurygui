@@ -23,10 +23,10 @@ setup(
         ]
     },
     install_requires=[
+        'pyvisa',
         'mercuryitc',
         'numpy',
         'pyqtgraph',
-        'pyvisa',
         'qtpy',
         'repr',
         'setuptools',
