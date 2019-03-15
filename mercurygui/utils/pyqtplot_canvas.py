@@ -3,129 +3,9 @@
 import sys
 import pyqtgraph as pg
 from pyqtgraph import AxisItem, PlotItem, GraphicsView
-from pyqtgraph import getConfigOption
-from pyqtgraph import functions as fn
-import numpy as np
 from qtpy import QtWidgets
 
 pg.setConfigOptions(antialias=True, exitCleanup=False)
-
-
-class MyAxisItem(AxisItem):
-
-    _textPen = None
-
-    def textPen(self):
-        if self._textPen is None:
-            return fn.mkPen(getConfigOption('foreground'))
-        return fn.mkPen(self._textPen)
-
-    def setTextPen(self, *args, **kwargs):
-        """
-        Set the pen used for drawing text.
-        If no arguments are given, the default foreground color will be used.
-        """
-        self.picture = None
-        if args or kwargs:
-            self._textPen = fn.mkPen(*args, **kwargs)
-        else:
-            self._textPen = fn.mkPen(getConfigOption('foreground'))
-        self.labelStyle['color'] = '#' + fn.colorStr(self._textPen.color())[:6]
-        self.setLabel()
-        self.update()
-
-    def tickSpacing(self, minVal, maxVal, size):
-
-        """Return values describing the desired spacing and offset of ticks.
-
-        This method is called whenever the axis needs to be redrawn and is a
-        good method to override in subclasses that require control over tick locations.
-
-        The return value must be a list of tuples, one for each set of ticks::
-
-            [
-                (major tick spacing, offset),
-                (minor tick spacing, offset),
-                (sub-minor tick spacing, offset),
-                ...
-            ]
-        """
-        # First check for override tick spacing
-        if self._tickSpacing is not None:
-            return self._tickSpacing
-
-        dif = abs(maxVal - minVal)
-        if dif == 0:
-            return []
-
-        # decide optimal minor tick spacing in pixels (this is just aesthetics)
-        optimalTickCount = max(2., np.log(size))
-
-        # optimal minor tick spacing
-        optimalSpacing = dif / optimalTickCount
-
-        # the largest power-of-10 spacing which is smaller than optimal
-        p10unit = 10 ** np.floor(np.log10(optimalSpacing))
-
-        # Determine major/minor tick spacings which flank the optimal spacing.
-        intervals = np.array([1., 2., 10., 20., 100.]) * p10unit
-        minorIndex = 0
-        while intervals[minorIndex+1] <= optimalSpacing:
-            minorIndex += 1
-
-        levels = [
-            (intervals[minorIndex+2], 0),
-            (intervals[minorIndex+1], 0),
-        ]
-
-        if self.style['maxTickLevel'] >= 2:
-            # decide whether to include the last level of ticks
-            minSpacing = min(size / 20., 30.)
-            maxTickCount = size / minSpacing
-            if dif / intervals[minorIndex] <= maxTickCount:
-                levels.append((intervals[minorIndex], 0))
-
-        return levels
-
-    def drawPicture(self, p, axisSpec, tickSpecs, textSpecs):
-
-        p.setRenderHint(p.Antialiasing, False)
-        p.setRenderHint(p.TextAntialiasing, True)
-
-        # draw long line along axis
-        pen, p1, p2 = axisSpec
-        p.setPen(pen)
-        p.drawLine(p1, p2)
-        p.translate(0.5, 0)  # resolves some damn pixel ambiguity
-
-        # draw ticks
-        for pen, p1, p2 in tickSpecs:
-            p.setPen(pen)
-            p.drawLine(p1, p2)
-
-        # Draw all text
-        if self.tickFont is not None:
-            p.setFont(self.tickFont)
-        p.setPen(self.textPen())
-        for rect, flags, text in textSpecs:
-            p.drawText(rect, flags, text)
-
-        p.setPen(pen)
-
-    def _updateMaxTextSize(self, x):
-        # Informs that the maximum tick size orthogonal to the axis has
-        # changed; we use this to decide whether the item needs to be resized
-        # to accommodate.
-        if self.orientation in ['left', 'right']:
-            if x > self.textWidth or x < self.textWidth-10:
-                self.textWidth = x
-                if self.style['autoExpandTextSpace'] is True:
-                    self._updateWidth()
-        else:
-            if x > self.textHeight or x < self.textHeight-10:
-                self.textHeight = x
-                if self.style['autoExpandTextSpace'] is True:
-                    self._updateHeight()
 
 
 class TemperatureHistoryPlot(GraphicsView):
@@ -162,8 +42,8 @@ class TemperatureHistoryPlot(GraphicsView):
         axisItems2 = dict()
 
         for pos in ['bottom', 'left', 'top', 'right']:
-            axisItems1[pos] = MyAxisItem(orientation=pos, maxTickLength=-4)
-            axisItems2[pos] = MyAxisItem(orientation=pos, maxTickLength=-4)
+            axisItems1[pos] = AxisItem(orientation=pos, maxTickLength=-4)
+            axisItems2[pos] = AxisItem(orientation=pos, maxTickLength=-4)
 
         self.p0 = PlotItem(axisItems=axisItems1)
         self.p1 = PlotItem(axisItems=axisItems2)
@@ -243,20 +123,20 @@ class TemperatureHistoryPlot(GraphicsView):
                                    pen=pg.mkPen(self.BLUE, width=self.LW),
                                    fillLevel=0, fillBrush=self.LIGHT_BLUE)
 
-        self.p_htr_0 = self.p1.plot([self.get_xmin(), 0], [0, 0],
-                                    pen=pg.mkPen(self.RED, width=self.LW),
-                                    autoDownsample=False)
-        self.p_gflw_0 = self.p1.plot([self.get_xmin(), 0], [0, 0],
-                                     pen=pg.mkPen(self.BLUE, width=self.LW),
-                                     autoDownsample=False)
+#        self.p_htr_0 = self.p1.plot([self.get_xmin(), 0], [0, 0],
+#                                    pen=pg.mkPen(self.RED, width=self.LW),
+#                                    autoDownsample=False)
+#        self.p_gflw_0 = self.p1.plot([self.get_xmin(), 0], [0, 0],
+#                                     pen=pg.mkPen(self.BLUE, width=self.LW),
+#                                     autoDownsample=False)
 
     def update_data(self, x_data, y_data_t, y_data_g, y_data_h):
         self.p_tempr.setData(x_data, y_data_t)
         self.p_gflw.setData(x_data, y_data_g)
         self.p_htr.setData(x_data, y_data_h)
 
-        self.p_htr_0.setData([min(x_data), 0], [0, 0])
-        self.p_gflw_0.setData([min(x_data), 0], [0, 0])
+#        self.p_htr_0.setData([min(x_data), 0], [0, 0])
+#        self.p_gflw_0.setData([min(x_data), 0], [0, 0])
 
     def set_xmin(self, value):
         self._xmin = value
