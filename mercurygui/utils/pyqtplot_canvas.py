@@ -23,7 +23,7 @@ class TemperatureHistoryPlot(GraphicsView):
         LW = 1.5
 
     _xmin = -1
-    _xmax = round(-0.002*_xmin, 4)
+    _xmax = round(-0.006*_xmin, 4)
 
     def __init__(self):
         GraphicsView.__init__(self)
@@ -47,7 +47,6 @@ class TemperatureHistoryPlot(GraphicsView):
 
         self.p0 = PlotItem(axisItems=axisItems1)
         self.p1 = PlotItem(axisItems=axisItems2)
-        self.set_xmin(-1.)
         self.layout.addItem(self.p0, 0, 0, 5, 1)
         self.layout.addItem(self.p1, 5, 0, 1, 1)
 
@@ -91,14 +90,14 @@ class TemperatureHistoryPlot(GraphicsView):
                           yMin=0, yMax=500, minYRange=2.1)
         self.p1.setYRange(-0.02, 1.02)
         self.p1.setLimits(xMin=self._xmin, xMax=self._xmax,
-                          yMin=-0.04, yMax=1.04, minYRange=1.08)
+                          yMin=-0.05, yMax=1.05, minYRange=1.1)
 
         # link x-axes
         self.p1.setXLink(self.p0)
 
         # override default padding with constant 0.2% padding
-        self.p0.vb.suggestPadding = lambda x: 0.002
-        self.p1.vb.suggestPadding = lambda x: 0.002
+        self.p0.vb.suggestPadding = lambda x: 0.006
+        self.p1.vb.suggestPadding = lambda x: 0.006
 
         # set auto range and mouse panning / zooming
         self.p0.enableAutoRange(x=True, y=True)
@@ -123,28 +122,18 @@ class TemperatureHistoryPlot(GraphicsView):
                                    pen=pg.mkPen(self.BLUE, width=self.LW),
                                    fillLevel=0, fillBrush=self.LIGHT_BLUE)
 
-#        self.p_htr_0 = self.p1.plot([self.get_xmin(), 0], [0, 0],
-#                                    pen=pg.mkPen(self.RED, width=self.LW),
-#                                    autoDownsample=False)
-#        self.p_gflw_0 = self.p1.plot([self.get_xmin(), 0], [0, 0],
-#                                     pen=pg.mkPen(self.BLUE, width=self.LW),
-#                                     autoDownsample=False)
-
     def update_data(self, x_data, y_data_t, y_data_g, y_data_h):
         self.p_tempr.setData(x_data, y_data_t)
         self.p_gflw.setData(x_data, y_data_g)
         self.p_htr.setData(x_data, y_data_h)
 
-#        self.p_htr_0.setData([min(x_data), 0], [0, 0])
-#        self.p_gflw_0.setData([min(x_data), 0], [0, 0])
-
     def set_xmin(self, value):
         self._xmin = value
-        self._xmax = round(-0.002*value, 4)
+        self._xmax = round(-0.006*value, 4)
         self.p0.setLimits(xMin=self._xmin, xMax=self._xmax,
                           yMin=0, yMax=500, minYRange=2.1)
         self.p1.setLimits(xMin=self._xmin, xMax=self._xmax,
-                          yMin=-0.04, yMax=1.04, minYRange=1.08)
+                          yMin=-0.05, yMax=1.05, minYRange=1.1)
 
     def get_xmin(self):
         return self._xmin
