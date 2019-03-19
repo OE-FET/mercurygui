@@ -377,7 +377,7 @@
    </widget>
    <widget class="QMenu" name="menu_Edit">
     <property name="title">
-     <string>&amp;Edit</string>
+     <string>Edit</string>
     </property>
    </widget>
    <widget class="QMenu" name="menuWindow">
