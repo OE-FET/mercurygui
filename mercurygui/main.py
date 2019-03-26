@@ -142,6 +142,7 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
         Connects menu bar items to callbacks, sets their initial activation.
         """
         # connect to callbacks
+        self.modulesAction.triggered.connect(self.feed.dialog.show)
         self.showLogAction.triggered.connect(self.on_log_clicked)
         self.exitAction.triggered.connect(self.exit_)
         self.readingsAction.triggered.connect(self.on_readings_clicked)

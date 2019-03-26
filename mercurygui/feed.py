@@ -296,16 +296,14 @@ class DataCollectionWorker(QtCore.QObject):
         self.control = self.mercury.modules[mod_numbers['temperature'] + 1]
 
 
-# if we're running the file directly and not importing it
 if __name__ == '__main__':
 
     from mercuryitc import MercuryITC
 
-    # check if event loop is already running (e.g. in IPython),
-    # otherwise create a new one
     app = QtWidgets.QApplication(sys.argv)
 
-    m = MercuryITC(CONF.get('Connection', 'VISA_ADDRESS'))
+    address = CONF.get('Connection', 'VISA_ADDRESS')
+    m = MercuryITC(address)
     feed = MercuryFeed(m)
 
     sys.exit(app.exec_())
