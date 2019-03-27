@@ -426,7 +426,7 @@ class ReadingsTab(QtWidgets.QWidget):
         self.module = module
         self.mercury = mercury
 
-        self.name = module.uid
+        self.name = module.nick
         self.attr = dir(module)
 
         self.gridLayout = QtWidgets.QGridLayout(self)
@@ -540,22 +540,22 @@ class ModulesDialog(QtWidgets.QDialog):
         self.feed = mercury_feed
         self.modules = self.feed.mercury.modules
 
-        def get_uids(type_):
-            return list(m.uid for m in self.modules if m.module_type == type_)
+        def get_nicks(type_):
+            return list(m.nick for m in self.modules if m.module_type == type_)
 
-        self.temp_module_uids = get_uids('TEMP')
-        self.htr_module_uids = get_uids('HTR')
-        self.aux_module_uids = get_uids('AUX')
+        self.temp_module_nicks = get_nicks('TEMP')
+        self.htr_module_nicks = get_nicks('HTR')
+        self.aux_module_nicks = get_nicks('AUX')
 
-        self.htr_module_uids.append('None')
-        self.aux_module_uids.append('None')
+        self.htr_module_nicks.append('None')
+        self.aux_module_nicks.append('None')
 
-        self.comboBoxTEMP.addItems(self.temp_module_uids)
-        self.comboBoxHTR.addItems(self.htr_module_uids)
-        self.comboBoxAUX.addItems(self.aux_module_uids)
+        self.comboBoxTEMP.addItems(self.temp_module_nicks)
+        self.comboBoxHTR.addItems(self.htr_module_nicks)
+        self.comboBoxAUX.addItems(self.aux_module_nicks)
 
         # get current modules
-        self.comboBoxTEMP.setCurrentText(self.feed.temperature.uid)
+        self.comboBoxTEMP.setCurrentText(self.feed.temperature.nick)
         self.comboBoxHTR.setCurrentText(self.feed.temperature.loop_htr)
         self.comboBoxAUX.setCurrentText(self.feed.temperature.loop_aux)
 
@@ -566,16 +566,16 @@ class ModulesDialog(QtWidgets.QDialog):
     @QtCore.Slot(str)
     def _on_comboBoxTEMP_textChanged(self, text):
         # update content of heater and gasflow combo boxes
-        temp_module = next((m for m in self.modules if m.uid == text))
+        temp_module = next(m for m in self.modules if m.nick == text)
 
         self.comboBoxHTR.setCurrentText(temp_module.loop_htr)
         self.comboBoxAUX.setCurrentText(temp_module.loop_aux)
 
     @QtCore.Slot()
     def _on_accept(self):
-        temp_uid = self.comboBoxTEMP.currentText()
-        self.feed.update_modules(temp_uid)  # updated feed
-        CONF.set('MercuryFeed', 'temperature_module', temp_uid)  # write to config file
+        temp_nick = self.comboBoxTEMP.currentText()
+        self.feed.update_modules(temp_nick)  # updated feed
+        CONF.set('MercuryFeed', 'temperature_module', temp_nick)  # write to config file
 
 
 def run():

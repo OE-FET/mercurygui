@@ -83,7 +83,7 @@ class MercuryFeed(QtCore.QObject):
         self.worker = None
 
         # get default modules to read from
-        self.temp_uid = CONF.get('MercuryFeed', 'temperature_module')
+        self.temp_nick = CONF.get('MercuryFeed', 'temperature_module')
 
         if self.mercury.connected:
             self.start_worker()
@@ -133,19 +133,19 @@ class MercuryFeed(QtCore.QObject):
         else:
             # start data collection thread
             self.thread = QtCore.QThread()
-            self.worker = DataCollectionWorker(self.refresh, self.mercury, self.temp_uid)
+            self.worker = DataCollectionWorker(self.refresh, self.mercury, self.temp_nick)
             self.worker.moveToThread(self.thread)
             self.worker.readings_signal.connect(self._get_data)
             self.worker.connected_signal.connect(self.connected_signal.emit)
-            self.update_modules(self.temp_uid)
+            self.update_modules(self.temp_nick)
             self.thread.started.connect(self.worker.run)
             self.thread.start()
 
-    def update_modules(self, temp_uid):
+    def update_modules(self, temp_nick):
         """
         Updates module list after the new modules have been selected.
         """
-        self.worker.update_modules(temp_uid)
+        self.worker.update_modules(temp_nick)
 
         self.temperature = self.worker.temperature
         self.heater = self.worker.heater
@@ -226,7 +226,7 @@ class DataCollectionWorker(QtCore.QObject):
 
         self.readings_signal.emit(self.readings)
 
-    def update_modules(self, temp_uid):
+    def update_modules(self, temp_nick):
         """
         Updates module list after the new modules have been selected.
         """
@@ -235,13 +235,13 @@ class DataCollectionWorker(QtCore.QObject):
         if len(temp_mods) == 0:
             raise IOError('The MercuryITC does have any connected temperature modules.')
         # find the temperature module with given UID, otherwise default to the 1st module
-        self.temperature = next((m for m in temp_mods if m.uid == temp_uid), temp_mods[0])
+        self.temperature = next((m for m in temp_mods if m.nick == temp_nick), temp_mods[0])
 
-        htr_uid = self.temperature.loop_htr
-        aux_uid = self.temperature.loop_aux
+        htr_nick = self.temperature.loop_htr
+        aux_nick = self.temperature.loop_aux
 
-        self.heater = next((m for m in self.mercury.modules if m.uid == htr_uid), None)
-        self.gasflow = next((m for m in self.mercury.modules if m.uid == aux_uid), None)
+        self.heater = next((m for m in self.mercury.modules if m.nick == htr_nick), None)
+        self.gasflow = next((m for m in self.mercury.modules if m.nick == aux_nick), None)
 
 
 if __name__ == '__main__':
