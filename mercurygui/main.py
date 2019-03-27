@@ -20,7 +20,7 @@ import pkg_resources as pkgr
 import time
 import numpy as np
 import logging
-from qtpy import QtGui, QtCore, QtWidgets, uic
+from qtpy import QtCore, QtWidgets, uic
 
 # local imports
 from mercurygui.feed import MercuryFeed
@@ -34,6 +34,7 @@ MAIN_UI_PATH = pkgr.resource_filename('mercurygui', 'main.ui')
 logger = logging.getLogger(__name__)
 
 
+# noinspection PyArgumentList
 class MercuryMonitorApp(QtWidgets.QMainWindow):
 
     QUIT_ON_CLOSE = True
@@ -53,8 +54,9 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
         self.labelTitle.setFont(font)
 
         # create popup Widgets
-        self.connection_dialog = ConnectionDialog(self, feed.mercury)
-        self.readingsWindow = None
+        self.connectionDialog = ConnectionDialog(self, feed.mercury)
+        self.readingsDialog = None
+        self.modulesDialog = None
 
         # create LED indicator
         self.led = LedIndicator(self)
@@ -142,13 +144,13 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
         Connects menu bar items to callbacks, sets their initial activation.
         """
         # connect to callbacks
-        self.modulesAction.triggered.connect(self.feed.dialog.show)
+        self.modulesAction.triggered.connect(self.on_module_selection_clicked)
         self.showLogAction.triggered.connect(self.on_log_clicked)
         self.exitAction.triggered.connect(self.exit_)
         self.readingsAction.triggered.connect(self.on_readings_clicked)
         self.connectAction.triggered.connect(self.feed.connect)
         self.disconnectAction.triggered.connect(self.feed.disconnect)
-        self.updateAddressAction.triggered.connect(self.connection_dialog.open)
+        self.updateAddressAction.triggered.connect(self.connectionDialog.open)
 
         # initially disable menu bar items, will be enabled later individually
         self.connectAction.setEnabled(True)
@@ -327,57 +329,57 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
 
         if 3.5 < new_t < 300:
             self.display_message('T_setpoint = %s K' % new_t)
-            self.feed.control.t_setpoint = new_t
+            self.feed.temperature.loop_tset = new_t
         else:
             self.display_error('Error: Only temperature setpoints between ' +
                                '3.5 K and 300 K allowed.')
 
     @QtCore.Slot()
     def change_ramp(self):
-        self.feed.control.ramp = self.r1_edit.value()
+        self.feed.temperature.loop_rset = self.r1_edit.value()
         self.display_message('Ramp = %s K/min' % self.r1_edit.value())
 
     @QtCore.Slot(bool)
     def change_ramp_auto(self, checked):
         if checked:
-            self.feed.control.ramp_enable = 'ON'
+            self.feed.temperature.loop_rena = 'ON'
             self.display_message('Ramp is turned ON')
         else:
-            self.feed.control.ramp_enable = 'OFF'
+            self.feed.temperature.loop_rena = 'OFF'
             self.display_message('Ramp is turned OFF')
 
     @QtCore.Slot()
     def change_flow(self):
-        self.feed.control.flow = self.gf1_edit.value()
+        self.feed.temperature.loop_fset = self.gf1_edit.value()
         self.display_message('Gas flow  = %s%%' % self.gf1_edit.value())
 
     @QtCore.Slot(bool)
     def change_flow_auto(self, checked):
         if checked:
-            self.feed.control.flow_auto = 'ON'
+            self.feed.temperature.loop_faut = 'ON'
             self.display_message('Gas flow is automatically controlled.')
             self.gf1_edit.setReadOnly(True)
             self.gf1_edit.setEnabled(False)
         else:
-            self.feed.control.flow_auto = 'OFF'
+            self.feed.temperature.loop_faut = 'OFF'
             self.display_message('Gas flow is manually controlled.')
             self.gf1_edit.setReadOnly(False)
             self.gf1_edit.setEnabled(True)
 
     @QtCore.Slot()
     def change_heater(self):
-        self.feed.control.heater = self.h1_edit.value()
+        self.feed.temperature.loop_hset = self.h1_edit.value()
         self.display_message('Heater power  = %s%%' % self.h1_edit.value())
 
     @QtCore.Slot(bool)
     def change_heater_auto(self, checked):
         if checked:
-            self.feed.control.heater_auto = 'ON'
+            self.feed.temperature.loop_enab = 'ON'
             self.display_message('Heater is automatically controlled.')
             self.h1_edit.setReadOnly(True)
             self.h1_edit.setEnabled(False)
         else:
-            self.feed.control.heater_auto = 'OFF'
+            self.feed.temperature.loop_enab = 'OFF'
             self.display_message('Heater is manually controlled.')
             self.h1_edit.setReadOnly(False)
             self.h1_edit.setEnabled(True)
@@ -386,18 +388,26 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
     def _check_overheat(self, readings):
         if readings['Temp'] > 310:
             self.display_error('Over temperature!')
-            self.feed.control.heater_auto = 'OFF'
-            self.feed.control.heater = 0
+            self.feed.temperature.loop_enab = 'OFF'
+            self.feed.temperature.loop_hset = 0
 
 # ========================== CALLBACKS FOR MENU BAR ===========================
 
     @QtCore.Slot()
     def on_readings_clicked(self):
         # create readings overview window if not present
-        if self.readingsWindow is None:
-            self.readingsWindow = ReadingsOverview(self.feed.mercury)
+        if self.readingsDialog is None:
+            self.readingsDialog = ReadingsOverview(self.feed.mercury)
         # show it
-        self.readingsWindow.show()
+        self.readingsDialog.show()
+
+    @QtCore.Slot()
+    def on_module_selection_clicked(self):
+        # create readings overview window if not present
+        if self.modulesDialog is None:
+            self.modulesDialog = ModulesDialog(self.feed.mercury)
+        # show it
+        self.modulesDialog.open()
 
     @QtCore.Slot()
     def on_log_clicked(self):
@@ -481,8 +491,8 @@ class ReadingsTab(QtWidgets.QWidget):
 
 class ReadingsOverview(QtWidgets.QDialog):
 
-    def __init__(self, mercury):
-        super(self.__class__, self).__init__()
+    def __init__(self, mercury, parent=None):
+        super(self.__class__, self).__init__(parent=parent)
         self.mercury = mercury
         self.setupUi(self)
 
@@ -522,6 +532,54 @@ class ReadingsOverview(QtWidgets.QDialog):
         if self.isVisible():
             self.tabWidget.currentWidget().get_reading()
             self.tabWidget.currentWidget().get_alarms()
+
+
+class ModulesDialog(QtWidgets.QDialog):
+    """
+    Provides a user dialog to select the modules for the feed.
+    """
+
+    accepted = QtCore.Signal(object)
+
+    def __init__(self, mercury_feed, parent=None):
+        super(self.__class__, self).__init__(parent=parent)
+        uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                                'module_dialog.ui'), self)
+
+        self.feed = mercury_feed
+        self.modules = self.feed.mercury.modules
+
+        def get_uids(type_):
+            return list(m.uid for m in self.modules if m.module_type == type_)
+
+        self.temp_module_uids = get_uids('TEMP')
+        self.htr_module_uids = get_uids('HTR')
+        self.aux_module_uids = get_uids('AUX')
+
+        self.comboBoxTEMP.addItems(self.temp_module_uids)
+        self.comboBoxHTR.addItems(self.htr_module_uids)
+        self.comboBoxAUX.addItems(self.aux_module_uids)
+
+        # get current modules
+        self.comboBoxTEMP.setCurrentText(self.feed.temperature.uid)
+        self.comboBoxHTR.setCurrentText(self.feed.heater.uid)
+        self.comboBoxAUX.setCurrentText(self.feed.gasflow.uid)
+
+        self.buttonBox.accepted.connect(self._on_accept)
+
+    @QtCore.Slot()
+    def _on_comboBoxTEMP_currentTextChanged(self, text):
+        # update content of heater and gasflow combo boxes
+        temp_module = next((m for m in self.modules if m.uid == text))
+
+        self.comboBoxHTR.setCurrentText(temp_module.loop_htr)
+        self.comboBoxAUX.setCurrentText(temp_module.loop_aux)
+
+    @QtCore.Slot()
+    def _on_accept(self):
+        temp_uid = self.comboBoxTEMP.currentText()
+        self.feed.update_modules(temp_uid)  # updated feed
+        CONF.set('MercuryFeed', 'temperature_module', temp_uid)  # write to config file
 
 
 def run():

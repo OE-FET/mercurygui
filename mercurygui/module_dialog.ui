@@ -6,33 +6,50 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>378</width>
+    <width>339</width>
     <height>144</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Module Selection</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="2" column="1">
-    <widget class="QComboBox" name="comboBox_2">
-     <property name="contextMenuPolicy">
-      <enum>Qt::DefaultContextMenu</enum>
-     </property>
-    </widget>
-   </item>
    <item row="1" column="0" alignment="Qt::AlignRight">
     <widget class="QLabel" name="label_2">
      <property name="text">
-      <string>Temperature sensor:</string>
+      <string>Temperature module:</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
      </property>
     </widget>
    </item>
+   <item row="2" column="1">
+    <widget class="QComboBox" name="comboBoxHTR">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+    </widget>
+   </item>
    <item row="3" column="1">
-    <widget class="QComboBox" name="comboBox_3"/>
+    <widget class="QComboBox" name="comboBoxAUX">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="contextMenuPolicy">
+      <enum>Qt::DefaultContextMenu</enum>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="0">
+    <widget class="QLabel" name="label_3">
+     <property name="text">
+      <string>Gasflow module:</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
    </item>
    <item row="4" column="0" colspan="2">
     <widget class="QDialogButtonBox" name="buttonBox">
@@ -45,22 +62,12 @@
     </widget>
    </item>
    <item row="1" column="1">
-    <widget class="QComboBox" name="comboBox"/>
-   </item>
-   <item row="3" column="0" alignment="Qt::AlignRight">
-    <widget class="QLabel" name="label_4">
-     <property name="text">
-      <string>Heater:</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-     </property>
-    </widget>
+    <widget class="QComboBox" name="comboBoxTEMP"/>
    </item>
    <item row="2" column="0" alignment="Qt::AlignRight">
-    <widget class="QLabel" name="label_3">
+    <widget class="QLabel" name="label_4">
      <property name="text">
-      <string>Gasflow needle valve:</string>
+      <string>Heater module:</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>

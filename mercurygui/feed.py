@@ -10,9 +10,8 @@ Attribution-NonCommercial-NoDerivs 2.0 UK: England & Wales License.
 
 """
 from __future__ import division, absolute_import
-from qtpy import QtCore, QtWidgets, uic
+from qtpy import QtCore, QtWidgets
 import sys
-import os
 import logging
 
 from mercurygui.config.main import CONF
@@ -22,10 +21,9 @@ logger = logging.getLogger(__name__)
 
 class MercuryFeed(QtCore.QObject):
     """
-    Provides a data feed from the MercuryiTC with the most important readings
-    of the gas flow, heater, temperature sensor and control loop modules. This
-    enables other programs to get readings from the feed and reduced direct
-    communication with the mercury.
+    Provides a data feed from the MercuryiTC with the most important readings of the gas
+    flow, heater and temperature modules. This enables other programs to get readings from
+    the feed and reduced direct communication with the mercury.
 
     New data from the selected modules is emitted by the :attr:`new_readings_signal`
     as a dictionary with entries:
@@ -84,6 +82,9 @@ class MercuryFeed(QtCore.QObject):
         self.thread = None
         self.worker = None
 
+        # get default modules to read from
+        self.temp_uid = CONF.get('MercuryFeed', 'temperature_module')
+
         if self.mercury.connected:
             self.start_worker()
             self.connected_signal.emit(True)
@@ -130,31 +131,25 @@ class MercuryFeed(QtCore.QObject):
         if self.worker and self.thread:
             self.worker.running = True
         else:
-            self.dialog = SensorDialog(self.mercury.modules)
-            self.dialog.accepted.connect(self.update_modules)
-
             # start data collection thread
             self.thread = QtCore.QThread()
-            self.worker = DataCollectionWorker(self.refresh, self.mercury,
-                                               self.dialog.modNumbers)
+            self.worker = DataCollectionWorker(self.refresh, self.mercury, self.temp_uid)
             self.worker.moveToThread(self.thread)
             self.worker.readings_signal.connect(self._get_data)
             self.worker.connected_signal.connect(self.connected_signal.emit)
+            self.update_modules(self.temp_uid)
             self.thread.started.connect(self.worker.run)
-            self.update_modules(self.dialog.modNumbers)
             self.thread.start()
 
-    def update_modules(self, mod_numbers):
+    def update_modules(self, temp_uid):
         """
-        Updates module list after the new modules have been selected in dialog.
+        Updates module list after the new modules have been selected.
         """
-        self.gasflow = self.mercury.modules[mod_numbers['gasflow']]
-        self.heater = self.mercury.modules[mod_numbers['heater']]
-        self.temperature = self.mercury.modules[mod_numbers['temperature']]
-        self.control = self.mercury.modules[mod_numbers['temperature'] + 1]
+        self.worker.update_modules(temp_uid)
 
-        # send new modules to thread if running
-        self.worker.update_modules(mod_numbers)
+        self.temperature = self.worker.temperature
+        self.heater = self.worker.heater
+        self.gasflow = self.worker.gasflow
 
     def _get_data(self, readings_from_thread):
         self.readings = readings_from_thread
@@ -164,84 +159,19 @@ class MercuryFeed(QtCore.QObject):
         return '<%s(%s)>' % (type(self).__name__, self.visa_address)
 
 
-class SensorDialog(QtWidgets.QDialog):
-    """
-    Provides a user dialog to select the modules for the feed.
-    """
-
-    accepted = QtCore.Signal(object)
-
-    def __init__(self, mercury_modules):
-        super(self.__class__, self).__init__()
-        uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                                'module_dialog.ui'), self)
-
-        num = len(mercury_modules)
-        temp_modules_nick = []
-        self.temp_modules = []
-        gas_modules_nick = []
-        self.gas_modules = []
-        heat_modules_nick = []
-        self.heat_modules = []
-
-        self.modNumbers = {}
-
-        for i in range(num-1, -1, -1):
-            address = mercury_modules[i].address
-            type_ = address.split(':')[-1]
-            nick = mercury_modules[i].nick
-            if type_ == 'AUX':
-                gas_modules_nick.append(nick)
-                self.gas_modules.append(i)
-            elif type_ == 'HTR':
-                heat_modules_nick.append(nick)
-                self.heat_modules.append(i)
-            elif type_ == 'TEMP':
-                if nick not in temp_modules_nick:
-                    temp_modules_nick.append(nick)
-                    self.temp_modules.append(i)
-
-        self.comboBox.addItems(temp_modules_nick)
-        self.comboBox_2.addItems(gas_modules_nick)
-        self.comboBox_3.addItems(heat_modules_nick)
-
-        # get default modules
-        self.comboBox.setCurrentIndex(CONF.get('MercuryFeed', 'temperature_module'))
-        self.comboBox_2.setCurrentIndex(CONF.get('MercuryFeed', 'gasflow_module'))
-        self.comboBox_3.setCurrentIndex(CONF.get('MercuryFeed', 'heater_module'))
-
-        self.modNumbers['temperature'] = self.temp_modules[self.comboBox.currentIndex()]
-        self.modNumbers['gasflow'] = self.gas_modules[self.comboBox_2.currentIndex()]
-        self.modNumbers['heater'] = self.heat_modules[self.comboBox_3.currentIndex()]
-
-        self.buttonBox.accepted.connect(self._on_accept)
-
-    def _on_accept(self):
-        self.modNumbers['temperature'] = self.temp_modules[self.comboBox.currentIndex()]
-        self.modNumbers['gasflow'] = self.gas_modules[self.comboBox_2.currentIndex()]
-        self.modNumbers['heater'] = self.heat_modules[self.comboBox_3.currentIndex()]
-
-        # update default modules
-        CONF.set('MercuryFeed', 'temperature_module', self.comboBox.currentIndex())
-        CONF.set('MercuryFeed', 'gasflow_module', self.comboBox_2.currentIndex())
-        CONF.set('MercuryFeed', 'heater_module', self.comboBox_3.currentIndex())
-
-        self.accepted.emit(self.modNumbers)
-
-
 class DataCollectionWorker(QtCore.QObject):
 
     readings_signal = QtCore.Signal(object)
     connected_signal = QtCore.Signal(bool)
 
-    def __init__(self, refresh, mercury, mod_numbers):
+    def __init__(self, refresh, mercury, temp_mod_number):
         QtCore.QObject.__init__(self)
         self.refresh = refresh
         self.mercury = mercury
-        self.mod_numbers = mod_numbers
+        self.temp_mod_number = temp_mod_number
 
         self.readings = {}
-        self.update_modules(self.mod_numbers)
+        self.update_modules(self.temp_mod_number)
 
         self.running = True
         self.terminate = False
@@ -267,33 +197,51 @@ class DataCollectionWorker(QtCore.QObject):
                     self.running = True
 
     def get_readings(self):
-        # read heater data
-        self.readings['HeaterVolt'] = self.heater.volt[0]
-        self.readings['HeaterAuto'] = self.control.heater_auto
-        self.readings['HeaterPercent'] = self.control.heater
-
-        # read gas flow data
-        self.readings['FlowAuto'] = self.control.flow_auto
-        self.readings['FlowPercent'] = self.gasflow.perc[0]
-        self.readings['FlowMin'] = self.gasflow.gmin
-        self.readings['FlowSetpoint'] = self.control.flow
-
         # read temperature data
         self.readings['Temp'] = self.temperature.temp[0]
-        self.readings['TempSetpoint'] = self.control.t_setpoint
-        self.readings['TempRamp'] = self.control.ramp
-        self.readings['TempRampEnable'] = self.control.ramp_enable
+        self.readings['TempSetpoint'] = self.temperature.loop_tset
+        self.readings['TempRamp'] = self.temperature.loop_rset
+        self.readings['TempRampEnable'] = self.temperature.loop_rena
+
+        # read heater data
+        if self.heater is not None:
+            self.readings['HeaterVolt'] = self.heater.volt[0]
+            self.readings['HeaterAuto'] = self.temperature.loop_enab
+            self.readings['HeaterPercent'] = self.temperature.loop_hset
+        else:
+            self.readings['HeaterVolt'] = float('nan')
+            self.readings['HeaterAuto'] = 'OFF'
+            self.readings['HeaterPercent'] = float('nan')
+        # read gas flow data
+        if self.gasflow is not None:
+            self.readings['FlowAuto'] = self.temperature.loop_faut
+            self.readings['FlowPercent'] = self.gasflow.perc[0]
+            self.readings['FlowMin'] = self.gasflow.gmin
+            self.readings['FlowSetpoint'] = self.temperature.loop_fset
+        else:
+            self.readings['FlowAuto'] = 'OFF'
+            self.readings['FlowPercent'] = float('nan')
+            self.readings['FlowMin'] = float('nan')
+            self.readings['FlowSetpoint'] = float('nan')
 
         self.readings_signal.emit(self.readings)
 
-    def update_modules(self, mod_numbers):
+    def update_modules(self, temp_uid):
         """
-        Updates module list after the new modules have been selected in dialog.
+        Updates module list after the new modules have been selected.
         """
-        self.gasflow = self.mercury.modules[mod_numbers['gasflow']]
-        self.heater = self.mercury.modules[mod_numbers['heater']]
-        self.temperature = self.mercury.modules[mod_numbers['temperature']]
-        self.control = self.mercury.modules[mod_numbers['temperature'] + 1]
+        # find all temperature modules
+        temp_mods = [m for m in self.mercury.modules if m.module_type == 'TEMP']
+        if len(temp_mods) == 0:
+            raise IOError('The MercuryITC does have any connected temperature modules.')
+        # find the temperature module with given UID, otherwise default to the 1st module
+        self.temperature = next((m for m in temp_mods if m.uid == temp_uid), temp_mods[0])
+
+        htr_uid = self.temperature.loop_htr
+        aux_uid = self.temperature.loop_aux
+
+        self.heater = next((m for m in self.mercury.modules if m.uid == htr_uid), None)
+        self.gasflow = next((m for m in self.mercury.modules if m.uid == aux_uid), None)
 
 
 if __name__ == '__main__':
@@ -303,7 +251,7 @@ if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
 
     address = CONF.get('Connection', 'VISA_ADDRESS')
-    m = MercuryITC(address)
-    feed = MercuryFeed(m)
+    mercury_instance = MercuryITC(address)
+    feed = MercuryFeed(mercury_instance)
 
     sys.exit(app.exec_())
