@@ -547,8 +547,8 @@ class ModulesDialog(QtWidgets.QDialog):
         self.htr_module_uids = get_uids('HTR')
         self.aux_module_uids = get_uids('AUX')
 
-        self.htr_module_uids.append('')
-        self.aux_module_uids.append('')
+        self.htr_module_uids.append('None')
+        self.aux_module_uids.append('None')
 
         self.comboBoxTEMP.addItems(self.temp_module_uids)
         self.comboBoxHTR.addItems(self.htr_module_uids)
@@ -556,15 +556,8 @@ class ModulesDialog(QtWidgets.QDialog):
 
         # get current modules
         self.comboBoxTEMP.setCurrentText(self.feed.temperature.uid)
-        if self.feed.heater is not None:
-            self.comboBoxHTR.setCurrentText(self.feed.heater.uid)
-        else:
-            self.comboBoxHTR.setCurrentText('')
-
-        if self.feed.gasflow is not None:
-            self.comboBoxAUX.setCurrentText(self.feed.gasflow.uid)
-        else:
-            self.comboBoxAUX.setCurrentText('')
+        self.comboBoxHTR.setCurrentText(self.feed.temperature.loop_htr)
+        self.comboBoxAUX.setCurrentText(self.feed.temperature.loop_aux)
 
         # connect callbacks
         self.comboBoxTEMP.currentTextChanged.connect(self._on_comboBoxTEMP_textChanged)
