@@ -105,8 +105,6 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
         self.feed.new_readings_signal.connect(self.update_text)
         # update plot when new data arrives
         self.feed.new_readings_signal.connect(self.update_plot)
-        # check for overheating when new data arrives
-        self.feed.new_readings_signal.connect(self._check_overheat)
 
         # set up logging to file
         self.setup_logging()
@@ -383,13 +381,6 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
             self.display_message('Heater is manually controlled.')
             self.h1_edit.setReadOnly(False)
             self.h1_edit.setEnabled(True)
-
-    @QtCore.Slot(object)
-    def _check_overheat(self, readings):
-        if readings['Temp'] > 310:
-            self.display_error('Over temperature!')
-            self.feed.temperature.loop_enab = 'OFF'
-            self.feed.temperature.loop_hset = 0
 
 # ========================== CALLBACKS FOR MENU BAR ===========================
 
