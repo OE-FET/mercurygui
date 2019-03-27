@@ -544,8 +544,8 @@ class ModulesDialog(QtWidgets.QDialog):
             return list(m.uid for m in self.modules if m.module_type == type_)
 
         self.temp_module_uids = get_uids('TEMP')
-        self.htr_module_uids = get_uids('HTR')
-        self.aux_module_uids = get_uids('AUX')
+        self.htr_module_uids = get_uids('HTR').append('')
+        self.aux_module_uids = get_uids('AUX').append('')
 
         self.comboBoxTEMP.addItems(self.temp_module_uids)
         self.comboBoxHTR.addItems(self.htr_module_uids)
@@ -553,8 +553,15 @@ class ModulesDialog(QtWidgets.QDialog):
 
         # get current modules
         self.comboBoxTEMP.setCurrentText(self.feed.temperature.uid)
-        self.comboBoxHTR.setCurrentText(self.feed.heater.uid)
-        self.comboBoxAUX.setCurrentText(self.feed.gasflow.uid)
+        if self.feed.heater is not None:
+            self.comboBoxHTR.setCurrentText(self.feed.heater.uid)
+        else:
+            self.comboBoxHTR.setCurrentText('')
+
+        if self.feed.gasflow is not None:
+            self.comboBoxAUX.setCurrentText(self.feed.gasflow.uid)
+        else:
+            self.comboBoxAUX.setCurrentText('')
 
         self.buttonBox.accepted.connect(self._on_accept)
 
