@@ -566,10 +566,12 @@ class ModulesDialog(QtWidgets.QDialog):
         else:
             self.comboBoxAUX.setCurrentText('')
 
+        # connect callbacks
+        self.comboBoxTMP.currentTextChanged.connect(self._on_comboBoxTEMP_textChanged)
         self.buttonBox.accepted.connect(self._on_accept)
 
     @QtCore.Slot()
-    def _on_comboBoxTEMP_currentTextChanged(self, text):
+    def _on_comboBoxTEMP_textChanged(self, text):
         # update content of heater and gasflow combo boxes
         temp_module = next((m for m in self.modules if m.uid == text))
 
