@@ -567,7 +567,7 @@ class ModulesDialog(QtWidgets.QDialog):
             self.comboBoxAUX.setCurrentText('')
 
         # connect callbacks
-        self.comboBoxTMP.currentTextChanged.connect(self._on_comboBoxTEMP_textChanged)
+        self.comboBoxTEMP.currentTextChanged.connect(self._on_comboBoxTEMP_textChanged)
         self.buttonBox.accepted.connect(self._on_accept)
 
     @QtCore.Slot()
