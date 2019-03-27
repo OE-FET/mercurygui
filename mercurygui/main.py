@@ -396,7 +396,7 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
     def on_module_selection_clicked(self):
         # create readings overview window if not present
         if self.modulesDialog is None:
-            self.modulesDialog = ModulesDialog(self.feed.mercury)
+            self.modulesDialog = ModulesDialog(self.feed)
         # show it
         self.modulesDialog.open()
 
@@ -426,7 +426,7 @@ class ReadingsTab(QtWidgets.QWidget):
         self.module = module
         self.mercury = mercury
 
-        self.name = module.nick
+        self.name = module.uid
         self.attr = dir(module)
 
         self.gridLayout = QtWidgets.QGridLayout(self)
