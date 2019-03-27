@@ -544,8 +544,11 @@ class ModulesDialog(QtWidgets.QDialog):
             return list(m.uid for m in self.modules if m.module_type == type_)
 
         self.temp_module_uids = get_uids('TEMP')
-        self.htr_module_uids = get_uids('HTR').append('')
-        self.aux_module_uids = get_uids('AUX').append('')
+        self.htr_module_uids = get_uids('HTR')
+        self.aux_module_uids = get_uids('AUX')
+
+        self.htr_module_uids.append('')
+        self.aux_module_uids.append('')
 
         self.comboBoxTEMP.addItems(self.temp_module_uids)
         self.comboBoxHTR.addItems(self.htr_module_uids)
