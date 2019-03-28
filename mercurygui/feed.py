@@ -204,23 +204,23 @@ class DataCollectionWorker(QtCore.QObject):
         self.readings['TempRampEnable'] = self.temperature.loop_rena
 
         # read heater data
-        if self.heater is not None:
+        if self.heater is not None:  # if heater is configured for temperature sensor
             self.readings['HeaterVolt'] = self.heater.volt[0]
             self.readings['HeaterAuto'] = self.temperature.loop_enab
             self.readings['HeaterPercent'] = self.temperature.loop_hset
-        else:
+        else:  # if no heater is configured
             self.readings['HeaterVolt'] = float('nan')
             self.readings['HeaterAuto'] = 'OFF'
-            self.readings['HeaterPercent'] = float('nan')
+            self.readings['HeaterPercent'] = 0  # 'NaN' values are not accepted by spinbox
         # read gas flow data
-        if self.gasflow is not None:
+        if self.gasflow is not None:  # if aux module is configured for temperature sensor
             self.readings['FlowAuto'] = self.temperature.loop_faut
             self.readings['FlowPercent'] = self.gasflow.perc[0]
             self.readings['FlowMin'] = self.gasflow.gmin
             self.readings['FlowSetpoint'] = self.temperature.loop_fset
-        else:
+        else:  # if no aux module is configured
             self.readings['FlowAuto'] = 'OFF'
-            self.readings['FlowPercent'] = float('nan')
+            self.readings['FlowPercent'] = 0  # 'NaN' values are not accepted by spinbox
             self.readings['FlowMin'] = float('nan')
             self.readings['FlowSetpoint'] = float('nan')
 
