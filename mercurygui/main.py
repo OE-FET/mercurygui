@@ -72,7 +72,7 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
         w = self.canvas.y_axis_width
         self.gridLayoutTop.setContentsMargins(w, 0, w, 0)
         self.gridLayoutBottom.setContentsMargins(w, 0, w, 0)
-        self.horixontalSlider.setMaximum(int(self.feed.refresh*self.MAX_DISPLAY/60))
+        self.horizontalSlider.setMaximum(int(self.feed.refresh*self.MAX_DISPLAY/60))
 
         # connect slider to plot
         self.horizontalSlider.valueChanged.connect(self.on_slider_changed)
@@ -86,7 +86,7 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
 
         # set up data vectors for plot
         self.xdata = np.array([])
-        self.xdata_zero = np.array([])
+        self.xdata_min_zero = np.array([])
         self.ydata_tmpr = np.array([])
         self.ydata_gflw = np.array([])
         self.ydata_htr = np.array([])
@@ -261,10 +261,10 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
         self.ydata_htr = self.ydata_htr[-self.MAX_DISPLAY:]
 
         # convert xData to minutes and set current time to t = 0
-        self.xdata_zero = (self.xdata - self.xdata[-1]) / 60
+        self.xdata_min_zero = (self.xdata - self.xdata[-1]) / 60
 
         # update plot
-        self.canvas.update_data(self.xdata_zero, self.ydata_tmpr,
+        self.canvas.update_data(self.xdata_min_zero, self.ydata_tmpr,
                                 self.ydata_gflw, self.ydata_htr)
 
 # =================== LOGGING DATA ============================================
