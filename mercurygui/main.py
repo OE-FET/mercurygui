@@ -21,6 +21,7 @@ import time
 import numpy as np
 import logging
 from qtpy import QtCore, QtWidgets, uic
+from mercuryitc.mercury_driver import MercuryITC_TEMP, MercuryITC_HTR, MercuryITC_AUX
 
 # local imports
 from mercurygui.feed import MercuryFeed
@@ -162,8 +163,7 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
 
         self.timeLabel.setText('Show last %s min' % sv)
         self.canvas.set_xmin(-sv)
-        self.canvas.p0.setXRange(-sv, 0)
-        self.canvas.p0.enableAutoRange(x=False, y=True)
+        self.canvas.p0.enableAutoRange(x=True, y=True)
 
     @QtCore.Slot(bool)
     def update_gui_connection(self, connected):
@@ -251,11 +251,11 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
         self.ydata_gflw = np.append(self.ydata_gflw, readings['FlowPercent'] / 100)
         self.ydata_htr = np.append(self.ydata_htr, readings['HeaterPercent'] / 100)
 
-        # prevent data vector from exceeding 86400 entries (~24h)
-        self.xdata = self.xdata[-86400:]
-        self.ydata_tmpr = self.ydata_tmpr[-86400:]
-        self.ydata_gflw = self.ydata_gflw[-86400:]
-        self.ydata_htr = self.ydata_htr[-86400:]
+        # prevent data vector from exceeding 172,800 entries (~48h)
+        self.xdata = self.xdata[-172800:]
+        self.ydata_tmpr = self.ydata_tmpr[-172800:]
+        self.ydata_gflw = self.ydata_gflw[-172800:]
+        self.ydata_htr = self.ydata_htr[-172800:]
 
         # convert xData to minutes and set current time to t = 0
         self.xdata_zero = (self.xdata - max(self.xdata)) / 60
@@ -541,11 +541,11 @@ class ModulesDialog(QtWidgets.QDialog):
         self.modules = self.feed.mercury.modules
 
         def get_nicks(type_):
-            return list(m.nick for m in self.modules if m.module_type == type_)
+            return list(m.nick for m in self.modules if type(m) == type_)
 
-        self.temp_module_nicks = get_nicks('TEMP')
-        self.htr_module_nicks = get_nicks('HTR')
-        self.aux_module_nicks = get_nicks('AUX')
+        self.temp_module_nicks = get_nicks(MercuryITC_TEMP)
+        self.htr_module_nicks = get_nicks(MercuryITC_HTR)
+        self.aux_module_nicks = get_nicks(MercuryITC_AUX)
 
         self.htr_module_nicks.append('None')
         self.aux_module_nicks.append('None')
