@@ -40,6 +40,8 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
 
     QUIT_ON_CLOSE = True
 
+    MAX_DISPLAY = 24*60*60
+
     def __init__(self, feed):
         super(self.__class__, self).__init__()
         uic.loadUi(MAIN_UI_PATH, self)
@@ -70,6 +72,7 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
         w = self.canvas.y_axis_width
         self.gridLayoutTop.setContentsMargins(w, 0, w, 0)
         self.gridLayoutBottom.setContentsMargins(w, 0, w, 0)
+        self.horixontalSlider.setMaximum(int(self.feed.refresh*self.MAX_DISPLAY/60))
 
         # connect slider to plot
         self.horizontalSlider.valueChanged.connect(self.on_slider_changed)
@@ -162,7 +165,7 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
         sv = self.horizontalSlider.value()
 
         self.timeLabel.setText('Show last %s min' % sv)
-        self.canvas.set_xmin(-sv)
+        self.canvas.set_xmin(-sv/self.feed.refresh)
         self.canvas.p0.enableAutoRange(x=True, y=True)
 
     @QtCore.Slot(bool)
@@ -251,14 +254,14 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
         self.ydata_gflw = np.append(self.ydata_gflw, readings['FlowPercent'] / 100)
         self.ydata_htr = np.append(self.ydata_htr, readings['HeaterPercent'] / 100)
 
-        # prevent data vector from exceeding 172,800 entries (~48h)
-        self.xdata = self.xdata[-172800:]
-        self.ydata_tmpr = self.ydata_tmpr[-172800:]
-        self.ydata_gflw = self.ydata_gflw[-172800:]
-        self.ydata_htr = self.ydata_htr[-172800:]
+        # prevent data vector from exceeding MAX_DISPLAY
+        self.xdata = self.xdata[-self.MAX_DISPLAY:]
+        self.ydata_tmpr = self.ydata_tmpr[-self.MAX_DISPLAY:]
+        self.ydata_gflw = self.ydata_gflw[-self.MAX_DISPLAY:]
+        self.ydata_htr = self.ydata_htr[-self.MAX_DISPLAY:]
 
         # convert xData to minutes and set current time to t = 0
-        self.xdata_zero = (self.xdata - max(self.xdata)) / 60
+        self.xdata_zero = (self.xdata - self.xdata[-1]) / 60
 
         # update plot
         self.canvas.update_data(self.xdata_zero, self.ydata_tmpr,
