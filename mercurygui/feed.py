@@ -13,6 +13,7 @@ from __future__ import division, absolute_import
 from qtpy import QtCore, QtWidgets
 import sys
 import logging
+from mercuryitc.mercury_driver import MercuryITC_TEMP
 
 from mercurygui.config.main import CONF
 
@@ -231,7 +232,7 @@ class DataCollectionWorker(QtCore.QObject):
         Updates module list after the new modules have been selected.
         """
         # find all temperature modules
-        temp_mods = [m for m in self.mercury.modules if m.module_type == 'TEMP']
+        temp_mods = [m for m in self.mercury.modules if type(m) == MercuryITC_TEMP]
         if len(temp_mods) == 0:
             raise IOError('The MercuryITC does have any connected temperature modules.')
         # find the temperature module with given UID, otherwise default to the 1st module
