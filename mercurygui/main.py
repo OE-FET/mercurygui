@@ -165,8 +165,8 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
         sv = self.horizontalSlider.value()
 
         self.timeLabel.setText('Show last %s min' % sv)
-        self.canvas.set_xmin(-sv/self.feed.refresh)
-        self.canvas.p0.enableAutoRange(x=True, y=True)
+        self.canvas.p0.setXRange(-sv, 0)
+        self.canvas.p0.enableAutoRange(x=False, y=True)
 
     @QtCore.Slot(bool)
     def update_gui_connection(self, connected):
