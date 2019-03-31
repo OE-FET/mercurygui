@@ -165,6 +165,7 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
         sv = self.horizontalSlider.value()
 
         self.timeLabel.setText('Show last %s min' % sv)
+        self.canvas.set_xmin(-sv)
         self.canvas.p0.setXRange(-sv, 0)
         self.canvas.p0.enableAutoRange(x=False, y=True)
 
