@@ -287,8 +287,18 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
         self.log_file = os.path.join(self.logging_path, 'temperature_log ' +
                                      time.strftime("%Y-%m-%d_%H-%M-%S") + '.txt')
 
-        t_save = 10  # time interval to save temperature data in min
-        self.new_file = True  # create new log file for every new start
+        # delete old log files
+        now = time.time()
+        days_to_keep = 7
+
+        for f in os.listdir(self.logging_path):
+            f = os.path.join(self.logging_path, f)
+            if os.stat(f).st_mtime < now - days_to_keep*24*60*60:
+                if os.path.isfile(f):
+                    os.remove(f)
+
+        # set up periodic logging
+        t_save = 10  # time interval to save temperature data (min)
         self.save_timer = QtCore.QTimer()
         self.save_timer.setInterval(t_save*60*1000)
         self.save_timer.setSingleShot(False)  # set to reoccur
