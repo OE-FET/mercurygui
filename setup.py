@@ -26,7 +26,7 @@ setup(
         'pyvisa',
         'mercuryitc',
         'numpy',
-        'pyqtgraph@git+https://github.com/OE-FET/pyqtgraph',
+        'pyqtgraph_cx@git+https://github.com/OE-FET/pyqtgraph',
         'qtpy',
         'repr',
         'setuptools',

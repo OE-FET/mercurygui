@@ -2,7 +2,7 @@ PyQt5
 PyVISA
 mercuryitc
 numpy
-pyqtgraph
+pyqtgraph_cx
 qtpy
 repr
 setuptools
