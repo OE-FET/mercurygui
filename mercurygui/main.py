@@ -26,7 +26,7 @@ from mercuryitc.mercury_driver import MercuryITC_TEMP, MercuryITC_HTR, MercuryIT
 # local imports
 from mercurygui.feed import MercuryFeed
 from mercurygui.connection_dialog import ConnectionDialog
-from mercurygui.utils.led_indicator_widget import LedIndicator
+from mercurygui.utils.led_indicator import LedIndicator
 from mercurygui.utils.pyqtplot_canvas import TemperatureHistoryPlot
 from mercurygui.config.main import CONF
 
