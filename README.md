@@ -16,7 +16,11 @@ The user interface for the cryostat plots historic temperature readings going ba
 - Python 2.7 or 3.x
 
 ## Installation
-Download or clone the repository. Install the package by running:
+Install the stable version from PyPi by running:
+```console
+$ pip install mercurygui
+```
+or the latest version from github:
 ```console
 $ pip install git+https://github.com/OE-FET/mercurygui
 ```
