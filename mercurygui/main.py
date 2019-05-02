@@ -316,7 +316,12 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
             path += '.txt'
 
         title = 'temperature trace, saved on ' + time.strftime('%d/%m/%Y') + '\n'
-        heater_vlim = self.feed.heater.vlim
+
+        if self.feed.heater is not None:
+            heater_vlim = self.feed.heater.vlim
+        else:
+            heater_vlim = '--'
+
         header = '\t'.join(['Time (sec)', 'Temperature (K)',
                             'Heater (%% of %sV)' % heater_vlim, 'Gas flow (%)'])
 
