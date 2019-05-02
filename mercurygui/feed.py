@@ -234,7 +234,7 @@ class DataCollectionWorker(QtCore.QObject):
         # find all temperature modules
         temp_mods = [m for m in self.mercury.modules if type(m) == MercuryITC_TEMP]
         if len(temp_mods) == 0:
-            raise IOError('The MercuryITC does have any connected temperature modules.')
+            raise IOError('The MercuryITC does not have any connected temperature modules.')
         # find the temperature module with given UID, otherwise default to the 1st module
         self.temperature = next((m for m in temp_mods if m.nick == temp_nick), temp_mods[0])
 
