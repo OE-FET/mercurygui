@@ -1,8 +1,5 @@
 # -*- coding: utf-8 -*-
-
 """
-Created on Tue Aug 23 11:03:57 2016
-
 @author: Sam Schott  (ss2151@cam.ac.uk)
 
 (c) Sam Schott; This work is licensed under a Creative Commons
