@@ -317,13 +317,8 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
 
         title = 'temperature trace, saved on ' + time.strftime('%d/%m/%Y') + '\n'
 
-        if self.feed.heater is not None:
-            heater_vlim = self.feed.heater.vlim
-        else:
-            heater_vlim = '--'
-
         header = '\t'.join(['Time (sec)', 'Temperature (K)',
-                            'Heater (%% of %sV)' % heater_vlim, 'Gas flow (%)'])
+                            'Heater (%%)', 'Gas flow (%)'])
 
         data_matrix = np.concatenate((self.xdata[:, np.newaxis],
                                       self.ydata_tmpr[:, np.newaxis],
@@ -331,7 +326,7 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
                                       self.ydata_gflw[:, np.newaxis]), axis=1)
 
         # noinspection PyTypeChecker
-        np.savetxt(path, data_matrix, delimiter='\t', header=title + header)
+        np.savetxt(path, data_matrix, delimiter='\t', header=title + header, fmt='%f')
 
     def log_temperature_data(self):
         # save temperature data to log file
