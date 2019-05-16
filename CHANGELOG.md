@@ -1,6 +1,7 @@
 #### master (2019-05-03)
 _Changed:_
 - Fixed a bug which would cause saving of log files to fail if no heater module is connected.
+- `MercuryMonitorApp` must now be explicitly imported from main.
 
 #### v1.1.1 (2019-04-23)
 
