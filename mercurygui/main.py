@@ -315,7 +315,7 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
         title = 'temperature trace, saved on ' + time.strftime('%d/%m/%Y') + '\n'
 
         header = '\t'.join(['Time (sec)', 'Temperature (K)',
-                            'Heater (%%)', 'Gas flow (%)'])
+                            'Heater (%)', 'Gas flow (%)'])
 
         data_matrix = np.concatenate((self.xdata[:, np.newaxis],
                                       self.ydata_tmpr[:, np.newaxis],
