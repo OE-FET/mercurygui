@@ -460,7 +460,7 @@ QStatusBar::item {border: 0px solid black };</string>
   <customwidget>
    <class>ReadingDSpinBox</class>
    <extends>QDoubleSpinBox</extends>
-   <header>mercurygui.utils.scientific_spinbox.h</header>
+   <header>mercurygui.pyqt_labutils.scientific_spinbox.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>
