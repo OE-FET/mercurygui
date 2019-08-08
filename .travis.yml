@@ -1,21 +1,18 @@
 language: python
 python:
-  - "2.7"
-  - "3.6"
-  - "3.7-dev"
-# command to install dependencies
+- '2.7'
+- '3.6'
+- 3.7-dev
 install:
-  - pip install pyvisa
-  - pip install .
-# command to run tests
+- pip install pyvisa
+- pip install .
 script:
-  - echo "skipping tests"
-
+- echo "skipping tests"
 deploy:
   provider: pypi
   user: SamSchott
   skip_existing: true
-  password:
-    secure: bD0pNmwz3i9UjbmMpm5NQUX9Gy67CZFgrRYFseRFLfZgSAUsbAR1Xa+Vz4yKPauWlB1sIgFFu2T6pSL6nO0aKm160ynmzE35D+tgLzHXwbqKMOWOj0m520vmTFvyw2SIJ0LQj5njmsnN/wMpM7YtNHZCCoNftE01aQ76xG5cX/G/qoosVUUEEApNZfc8YY2yLQfmWWcN4KnN99fwFYq8dkLX0o9gdQL0Epc1OhkpX5J5GrNtA5BvotSXGwcvDPMKeWWHAiOsSbJasnBKQwhkCQfWme7eiINYLV0LD6ok2GBmcPGm1m7r0j0IQg6qvmIgOwhmAFzaba2ck+8NPVF40/3HiT7Yz52/Qxxgj3qk0BiI0X7WzomE2nEUTLpW0StcuGtoRhDjw7v6uLVhR1V+4N8lnmvY2MQkcJCaWBGNTGqHp/e2Gnr1fFi+p7r66maWkWEDuboqI2FUlDcZuVeVk0n1jfHiB6dH/zuv2vQLSazVNAbZtyYCS+ciXfy+QhfkMBJbRMk2Xd5+oLHm8aw3cl18VDRF5UVUjmrs3i50pkwn7xoHOC8RHhQIKWcAk0OwqIcxUuc5fgNCffhKZ20fIPa2+6N+Xybd/27Odj1wAkIUdXzMHydAsfUdGymEjOuCkf0sYkmABOdl/bvzDpB1D/VMDB9wb4hMSENeNkBWFjg=
   on:
     tags: true
+  password:
+    secure: jlN7PaOAdM6IHlQuAgmnFr8SU0YKVgp43l1IOVBs1S2iCBDpE8Yt+bwTP8hJtWIEjoQHnBGJLq0QLb5qw+3Ndr26PnMuSd/9ARdlRfdGte0f2yp+ZR2lvA6YZrcmdWHgxawlpRYZl9UsLmHMyt7pffylQ6Dv8MafAM92JUwPNdG/aXGzYgVEWlSl49WIAiLQD2NT+SlcCtTsD5fel1PpITBWme1OIgFyy+RztjuJZq1Gc6bbC+x+ThwEtQU+L/CxoKNtj7Rx/wha3k3a6x51sQlJ/0Zh+lcq/mrC8X3Ld0ppiM6g+uzL8UjCwYRC+wjiRfinJSN2l5zOxgLH50KHkcLifSodoU7KCKWRJoi3NdGc//AOwXlJgYG3DuWu9H1HxwJLf1rYri7S++PnMu3UP53EyKERpwMf6csyZ3yScC/SA8BWzzQuCoZsxv8dOclB/R790XHswekOIf12ZCLn7SKm1B1vGJzW7lJG/zxA2YjDFEIOT3JX51CETLhUHRr1/ukXCo3FBuZnj0u/TnH5KeO61k0RKptrr7/YUSLqJC19T96M7bk/yxOoAvV9w4QkF7Yoxh9eKN6M/6VXNQfi5JckGfqmfSkMMk/cunaNFAcqOQhbCQyIINpmCe8eujvztrfA8p65ytlq+pkx9es6yEQAFDYZFHCr+FeK4WIk0qU=
