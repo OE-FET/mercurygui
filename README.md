@@ -10,7 +10,6 @@ The user interface for the cryostat plots historic temperature readings going ba
 <img src="https://raw.githubusercontent.com/OE-FET/mercurygui/master/screenshots/MercuryGUI.png" alt="Screenshot of the user interface" width="800"/>
 
 ## System requirements
-*Required*:
 
 - Linux or macOS
 - Python 2.7 or 3.x
