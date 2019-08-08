@@ -9,11 +9,6 @@ The user interface for the cryostat plots historic temperature readings going ba
 
 <img src="https://raw.githubusercontent.com/OE-FET/mercurygui/master/screenshots/MercuryGUI.png" alt="Screenshot of the user interface" width="800"/>
 
-## System requirements
-
-- Linux or macOS
-- Python 2.7 or 3.x
-
 ## Installation
 Install the stable version from PyPi by running:
 ```console
@@ -23,6 +18,11 @@ or the latest version from github:
 ```console
 $ pip install git+https://github.com/OE-FET/mercurygui
 ```
+
+## System requirements
+
+- Linux or macOS
+- Python 2.7 or 3.x
 
 ## Acknowledgements
 Config modules are based on the implementation from [Spyder](https://github.com/spyder-ide).
