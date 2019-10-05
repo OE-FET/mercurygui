@@ -9,7 +9,11 @@ Attribution-NonCommercial-NoDerivs 2.0 UK: England & Wales License.
 import sys
 import pyqtgraph as pg
 from pyqtgraph import AxisItem, PlotItem, GraphicsView
-from qtpy import QtWidgets
+from pyqtgraph import functions as fn
+from qtpy import QtWidgets, QtCore, QtGui
+
+from .pyqt_labutils.dark_mode_support import LINE_COLOR_DARK, LINE_COLOR_LIGHT, isDarkWindow
+
 
 pg.setConfigOptions(antialias=True, exitCleanup=False)
 
@@ -69,8 +73,11 @@ class TemperatureHistoryPlot(GraphicsView):
                 ax.setVisible(True)  # make all axes visible
                 ax.setPen(width=self.LW*2/3, color=0.5)  # grey spines and ticks
                 ax.setTextPen('k')  # black text
-                ax.setStyle(maxTickLevel=1, autoExpandTextSpace=False,
-                            tickTextOffset=4)
+                ax.setStyle(
+                    maxTickLevel=1,
+                    autoExpandTextSpace=False,
+                    tickTextOffset=4
+                )
                 if pos in ['left', 'right']:
                     ax.setStyle(tickTextWidth=text_width + 5)
 
@@ -78,7 +85,7 @@ class TemperatureHistoryPlot(GraphicsView):
             p.getAxis('right').setTicks([])
 
         # light grey for internal spine
-        self.p1.getAxis('top').setPen(width=self.LW*2/3, color=0.8)
+        self.p1.getAxis('top').setPen(width=self.LW*2/3, color=LINE_COLOR_LIGHT)
 
         # get total axis width and make accessible to the outside
         self.y_axis_width = self.p0.getAxis('left').maximumWidth() + 1
@@ -128,6 +135,9 @@ class TemperatureHistoryPlot(GraphicsView):
                                    pen=pg.mkPen(self.BLUE, width=self.LW),
                                    fillLevel=0, fillBrush=self.LIGHT_BLUE)
 
+        # update colors
+        self.update_darkmode()
+
     def update_data(self, x_data, y_data_t, y_data_g, y_data_h):
         self.p_tempr.setData(x_data, y_data_t)
         self.p_gflw.setData(x_data, y_data_g)
@@ -143,6 +153,30 @@ class TemperatureHistoryPlot(GraphicsView):
 
     def get_xmin(self):
         return self._xmin
+
+    def changeEvent(self, QEvent):
+
+        if QEvent.type() == QtCore.QEvent.PaletteChange:
+            self.update_darkmode()
+
+    def update_darkmode(self):
+
+        # get colors
+        bg_color = self.palette().color(QtGui.QPalette.Base)
+        bg_color_rgb = [bg_color.red(), bg_color.green(), bg_color.blue()]
+        font_color = self.palette().color(QtGui.QPalette.Text)
+        font_color_rgb = [font_color.red(), font_color.green(), font_color.blue()]
+
+        # set colors
+        self.setBackground(None)
+        for p in [self.p0, self.p1]:
+            p.vb.setBackgroundColor(bg_color_rgb)
+            for pos in ['bottom', 'left', 'top', 'right']:
+                ax = p.getAxis(pos)
+                ax.setTextPen(fn.mkColor(font_color_rgb))  # black text
+
+        c = LINE_COLOR_DARK if isDarkWindow() else LINE_COLOR_LIGHT
+        self.p1.getAxis('top').setPen(width=self.LW*2/3, color=c)
 
 
 if __name__ == '__main__':
