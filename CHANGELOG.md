@@ -1,3 +1,10 @@
+#### v1.1.3-dev (2019-10-06):
+
+_Added:_
+
+- Support for dark interface themes, such as the dark mode in macOS Mojave. This will
+  require a version of PyQt / Qt which supports system themes, such as v5.12 for macOS.
+
 ####  v1.1.2 (2019-08-04)
 
 _Changed:_
