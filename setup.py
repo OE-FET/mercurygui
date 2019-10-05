@@ -26,7 +26,7 @@ setup(
         'pyvisa',
         'mercuryitc>=0.2.1',
         'numpy',
-        'pyqtgraph_cx>=0.12',
+        'pyqtgraph_cx>=0.12.1',
         'qtpy',
         'repr',
         'setuptools',
