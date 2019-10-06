@@ -35,6 +35,8 @@ class TemperatureHistoryPlot(GraphicsView):
     _xmin = -1
     _xmax = round(-0.006*_xmin, 4)
 
+    _init_done = False
+
     def __init__(self):
         GraphicsView.__init__(self)
 
@@ -138,6 +140,8 @@ class TemperatureHistoryPlot(GraphicsView):
         # update colors
         self.update_darkmode()
 
+        self._init_done = True
+
     def update_data(self, x_data, y_data_t, y_data_g, y_data_h):
         self.p_tempr.setData(x_data, y_data_t)
         self.p_gflw.setData(x_data, y_data_g)
@@ -156,7 +160,7 @@ class TemperatureHistoryPlot(GraphicsView):
 
     def changeEvent(self, QEvent):
 
-        if QEvent.type() == QtCore.QEvent.PaletteChange:
+        if QEvent.type() == QtCore.QEvent.PaletteChange and self._init_done:
             self.update_darkmode()
 
     def update_darkmode(self):
