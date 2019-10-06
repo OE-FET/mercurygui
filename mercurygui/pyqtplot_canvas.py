@@ -7,9 +7,9 @@ Attribution-NonCommercial-NoDerivs 2.0 UK: England & Wales License.
 
 """
 import sys
-import pyqtgraph as pg
-from pyqtgraph import AxisItem, PlotItem, GraphicsView
-from pyqtgraph import functions as fn
+import cx_pyqtgraph as pg
+from cx_pyqtgraph import AxisItem, PlotItem, GraphicsView
+from cx_pyqtgraph import functions as fn
 from qtpy import QtWidgets, QtCore, QtGui
 
 from .pyqt_labutils.dark_mode_support import LINE_COLOR_DARK, LINE_COLOR_LIGHT, isDarkWindow
