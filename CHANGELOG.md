@@ -1,32 +1,38 @@
-#### v1.1.3-dev (2019-10-06):
+#### v1.1.3 (2019-10-09):
 
-_Added:_
+This release focuses on cosmetic improvements, including dark mode support.
+
+##### Changed:
+
+- We now depend on our own fork of pyqtgraph `cx_pyqtgraph`.
+
+##### Added:
 
 - Support for dark interface themes, such as the dark mode in macOS Mojave. This will
   require a version of PyQt / Qt which supports system themes, such as v5.12 for macOS.
 
 ####  v1.1.2 (2019-08-04)
 
-_Changed:_
+##### Changed:
 
 - Bumped mercuryitc driver requirements.
 - `MercuryMonitorApp` must now be explicitly imported from main.
 - Moved utils to submodule `pyqt_labutils`.
 
-_Fixed:_
+##### Fixed:
 
 - Fixed a bug which would cause saving of log files to fail if no heater module is
   connected.
 
 #### v1.1.1 (2019-04-23)
 
-_Changed:_
+##### Changed:
 
 - Switched plotting to from Matplotlib to PyQtGraph for better performance.
 - Switched to scientific spin boxes.
 
 #### v1.1.0 (2019-04-23)
 
-_Added:_
+##### Added:
 
 - Plot gasflow and heater output below temperature plot.
