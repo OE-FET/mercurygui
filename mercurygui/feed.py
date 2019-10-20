@@ -21,7 +21,7 @@ class MercuryFeed(QtCore.QObject):
     """
     Provides a data feed from the MercuryiTC with the most important readings of the gas
     flow, heater and temperature modules. This enables other programs to get readings from
-    the feed and reduced direct communication with the mercury.
+    the feed and reduces direct communication with the mercury.
 
     New data from the selected modules is emitted by the :attr:`new_readings_signal`
     as a dictionary with entries:
@@ -46,7 +46,7 @@ class MercuryFeed(QtCore.QObject):
     You can receive the emitted readings as follows:
 
         >>> from mercuryitc import MercuryITC
-        >>> from mercurygui import MercuryFeed
+        >>> from mercurygui.feed import MercuryFeed
         >>> # connect to mercury and start data feed
         >>> m = MercuryITC('VISA_ADDRESS')
         >>> feed = MercuryFeed(m)
@@ -135,15 +135,15 @@ class MercuryFeed(QtCore.QObject):
             self.worker.moveToThread(self.thread)
             self.worker.readings_signal.connect(self._get_data)
             self.worker.connected_signal.connect(self.connected_signal.emit)
-            self.update_modules(self.temp_nick)
+            self.select_temp_sensor(self.temp_nick)
             self.thread.started.connect(self.worker.run)
             self.thread.start()
 
-    def update_modules(self, temp_nick):
+    def select_temp_sensor(self, temp_nick):
         """
         Updates module list after the new modules have been selected.
         """
-        self.worker.update_modules(temp_nick)
+        self.worker.select_temp_sensor(temp_nick)
 
         self.temperature = self.worker.temperature
         self.heater = self.worker.heater
@@ -169,7 +169,7 @@ class DataCollectionWorker(QtCore.QObject):
         self.temp_mod_number = temp_mod_number
 
         self.readings = {}
-        self.update_modules(self.temp_mod_number)
+        self.select_temp_sensor(self.temp_mod_number)
 
         self.running = True
         self.terminate = False
@@ -224,7 +224,7 @@ class DataCollectionWorker(QtCore.QObject):
 
         self.readings_signal.emit(self.readings)
 
-    def update_modules(self, temp_nick):
+    def select_temp_sensor(self, temp_nick):
         """
         Updates module list after the new modules have been selected.
         """

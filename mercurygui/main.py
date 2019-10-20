@@ -94,7 +94,8 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
         self.set_up_menubar()
 
         # check if mercury is connected, connect slots
-        self.display_message('Looking for Mercury at %s...' % self.feed.visa_address)
+        self.display_message('Looking for temperature controller at %s...' %
+                             self.feed.visa_address)
         if self.feed.mercury.connected:
             self.update_gui_connection(connected=True)
 
@@ -102,9 +103,8 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
         # adjust clickable buttons upon connect / disconnect
         self.feed.connected_signal.connect(self.update_gui_connection)
 
-        # get new readings when available, send as out signals
+        # get new readings every second, update UI
         self.feed.new_readings_signal.connect(self.update_text)
-        # update plot when new data arrives
         self.feed.new_readings_signal.connect(self.update_plot)
 
         # set up logging to file
@@ -585,7 +585,7 @@ class ModulesDialog(QtWidgets.QDialog):
     @QtCore.Slot()
     def _on_accept(self):
         temp_nick = self.comboBoxTEMP.currentText()
-        self.feed.update_modules(temp_nick)  # updated feed
+        self.feed.select_temp_sensor(temp_nick)  # updated feed
         CONF.set('MercuryFeed', 'temperature_module', temp_nick)  # write to config file
 
 
