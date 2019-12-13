@@ -22,8 +22,7 @@ from mercuryitc.mercury_driver import MercuryITC_TEMP, MercuryITC_HTR, MercuryIT
 
 # local imports
 from mercurygui.feed import MercuryFeed
-from mercurygui.connection_dialog import ConnectionDialog
-from mercurygui.pyqt_labutils import LedIndicator
+from mercurygui.pyqt_labutils import LedIndicator, ConnectionDialog
 from mercurygui.pyqtplot_canvas import TemperatureHistoryPlot
 from mercurygui.config.main import CONF
 
@@ -54,7 +53,7 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
         self.labelTitle.setFont(font)
 
         # create popup Widgets
-        self.connectionDialog = ConnectionDialog(self, feed.mercury)
+        self.connectionDialog = ConnectionDialog(self, feed.mercury, CONF)
         self.readingsDialog = None
         self.modulesDialog = None
 
