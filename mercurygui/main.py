@@ -8,7 +8,6 @@ Attribution-NonCommercial-NoDerivs 2.0 UK: England & Wales License.
 """
 
 # system imports
-from __future__ import division, print_function, absolute_import
 import sys
 import os
 import platform
