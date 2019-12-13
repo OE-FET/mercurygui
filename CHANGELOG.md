@@ -1,3 +1,17 @@
+### v1.2.0 (2019-12-13):
+
+This release drops support for Python 2.7. Only Python 3.6 and higher are supported.
+
+#### Changed:
+
+- Updated submodule 'pyqt_labutils'.
+- Depend on PyQt5 instead of qtpy.
+- Resize connection dialog when hiding PyVisa backend textbox. 
+
+#### Removed:
+
+- Python 2.7 support.
+
 ### v1.1.3 (2019-10-09):
 
 This release focuses on cosmetic improvements, including dark mode support.
