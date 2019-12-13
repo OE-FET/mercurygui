@@ -10,7 +10,7 @@ import sys
 import cx_pyqtgraph as pg
 from cx_pyqtgraph import AxisItem, PlotItem, GraphicsView
 from cx_pyqtgraph import functions as fn
-from qtpy import QtWidgets, QtCore, QtGui
+from PyQt5 import QtWidgets, QtCore, QtGui
 
 from .pyqt_labutils.dark_mode_support import LINE_COLOR_DARK, LINE_COLOR_LIGHT, isDarkWindow
 

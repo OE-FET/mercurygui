@@ -17,7 +17,7 @@ import pkg_resources as pkgr
 import time
 import numpy as np
 import logging
-from qtpy import QtCore, QtWidgets, uic
+from PyQt5 import QtCore, QtWidgets, uic
 from mercuryitc.mercury_driver import MercuryITC_TEMP, MercuryITC_HTR, MercuryITC_AUX
 
 # local imports
@@ -165,7 +165,7 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
         self.canvas.p0.setXRange(-sv, 0)
         self.canvas.p0.enableAutoRange(x=False, y=True)
 
-    @QtCore.Slot(bool)
+    @QtCore.pyqtSlot(bool)
     def update_gui_connection(self, connected):
         if connected:
             self.display_message('Connection established.')
@@ -212,7 +212,7 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
     def display_error(self, text):
         self.statusbar.showMessage('%s' % text)
 
-    @QtCore.Slot(object)
+    @QtCore.pyqtSlot(object)
     def update_text(self, readings):
         """
         Parses readings for the MercuryMonitorApp and updates UI accordingly
@@ -243,7 +243,7 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
         is_ramp_enable = readings['TempRampEnable'] == 'ON'
         self.r2_checkbox.setChecked(is_ramp_enable)
 
-    @QtCore.Slot(object)
+    @QtCore.pyqtSlot(object)
     def update_plot(self, readings):
         # append data for plotting
         self.xdata = np.append(self.xdata, time.time())
@@ -331,7 +331,7 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
 
 # =================== CALLBACKS FOR SETTING CHANGES ===========================
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     def change_t_setpoint(self):
         new_t = self.t2_edit.value()
 
@@ -342,12 +342,12 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
             self.display_error('Error: Only temperature setpoints between ' +
                                '3.5 K and 300 K allowed.')
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     def change_ramp(self):
         self.feed.temperature.loop_rset = self.r1_edit.value()
         self.display_message('Ramp = %s K/min' % self.r1_edit.value())
 
-    @QtCore.Slot(bool)
+    @QtCore.pyqtSlot(bool)
     def change_ramp_auto(self, checked):
         if checked:
             self.feed.temperature.loop_rena = 'ON'
@@ -356,12 +356,12 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
             self.feed.temperature.loop_rena = 'OFF'
             self.display_message('Ramp is turned OFF')
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     def change_flow(self):
         self.feed.temperature.loop_fset = self.gf1_edit.value()
         self.display_message('Gas flow  = %s%%' % self.gf1_edit.value())
 
-    @QtCore.Slot(bool)
+    @QtCore.pyqtSlot(bool)
     def change_flow_auto(self, checked):
         if checked:
             self.feed.temperature.loop_faut = 'ON'
@@ -374,12 +374,12 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
             self.gf1_edit.setReadOnly(False)
             self.gf1_edit.setEnabled(True)
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     def change_heater(self):
         self.feed.temperature.loop_hset = self.h1_edit.value()
         self.display_message('Heater power  = %s%%' % self.h1_edit.value())
 
-    @QtCore.Slot(bool)
+    @QtCore.pyqtSlot(bool)
     def change_heater_auto(self, checked):
         if checked:
             self.feed.temperature.loop_enab = 'ON'
@@ -394,7 +394,7 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
 
 # ========================== CALLBACKS FOR MENU BAR ===========================
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     def on_readings_clicked(self):
         # create readings overview window if not present
         if self.readingsDialog is None:
@@ -402,7 +402,7 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
         # show it
         self.readingsDialog.show()
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     def on_module_selection_clicked(self):
         # create readings overview window if not present
         if self.modulesDialog is None:
@@ -410,7 +410,7 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
         # show it
         self.modulesDialog.open()
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     def on_log_clicked(self):
         """
         Opens directory with log files with current log file selected.
@@ -573,7 +573,7 @@ class ModulesDialog(QtWidgets.QDialog):
         self.comboBoxTEMP.currentTextChanged.connect(self._on_comboBoxTEMP_textChanged)
         self.buttonBox.accepted.connect(self._on_accept)
 
-    @QtCore.Slot(str)
+    @QtCore.pyqtSlot(str)
     def _on_comboBoxTEMP_textChanged(self, text):
         # update content of heater and gasflow combo boxes
         temp_module = next(m for m in self.modules if m.nick == text)
@@ -581,7 +581,7 @@ class ModulesDialog(QtWidgets.QDialog):
         self.comboBoxHTR.setCurrentText(temp_module.loop_htr)
         self.comboBoxAUX.setCurrentText(temp_module.loop_aux)
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     def _on_accept(self):
         temp_nick = self.comboBoxTEMP.currentText()
         self.feed.select_temp_sensor(temp_nick)  # updated feed

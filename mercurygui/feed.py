@@ -6,7 +6,7 @@
 Attribution-NonCommercial-NoDerivs 2.0 UK: England & Wales License.
 
 """
-from qtpy import QtCore, QtWidgets
+from PyQt5 import QtCore, QtWidgets
 import sys
 import logging
 from mercuryitc.mercury_driver import MercuryITC_TEMP

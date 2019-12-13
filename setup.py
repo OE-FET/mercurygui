@@ -27,7 +27,7 @@ setup(
         'mercuryitc>=0.2.1',
         'numpy',
         'cx_pyqtgraph>=0.12.1',
-        'qtpy',
+        'PyQt5',
         'repr',
         'setuptools',
     ],
