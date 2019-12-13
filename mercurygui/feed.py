@@ -63,9 +63,9 @@ class MercuryFeed(QtCore.QObject):
     when it looses an established connection.
     """
 
-    new_readings_signal = QtCore.Signal(dict)
-    notify_signal = QtCore.Signal(str)
-    connected_signal = QtCore.Signal(bool)
+    new_readings_signal = QtCore.pyqtSignal(dict)
+    notify_signal = QtCore.pyqtSignal(str)
+    connected_signal = QtCore.pyqtSignal(bool)
 
     def __init__(self, mercury, refresh=1):
         super(self.__class__, self).__init__()
@@ -158,8 +158,8 @@ class MercuryFeed(QtCore.QObject):
 
 class DataCollectionWorker(QtCore.QObject):
 
-    readings_signal = QtCore.Signal(object)
-    connected_signal = QtCore.Signal(bool)
+    readings_signal = QtCore.pyqtSignal(object)
+    connected_signal = QtCore.pyqtSignal(bool)
 
     def __init__(self, refresh, mercury, temp_mod_number):
         QtCore.QObject.__init__(self)

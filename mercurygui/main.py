@@ -540,7 +540,7 @@ class ModulesDialog(QtWidgets.QDialog):
     Provides a user dialog to select the modules for the feed.
     """
 
-    accepted = QtCore.Signal(object)
+    accepted = QtCore.pyqtSignal(object)
 
     def __init__(self, mercury_feed, parent=None):
         super(self.__class__, self).__init__(parent=parent)
