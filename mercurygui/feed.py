@@ -6,7 +6,6 @@
 Attribution-NonCommercial-NoDerivs 2.0 UK: England & Wales License.
 
 """
-from __future__ import division, absolute_import
 from qtpy import QtCore, QtWidgets
 import sys
 import logging
