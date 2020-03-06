@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='mercurygui',
-    version='1.2.0',
+    version='1.2.1',
     description="",
     author='Sam Schott',
     author_email='ss2151@cam.ac.uk',

@@ -1,3 +1,10 @@
+### v1.2.1 (2020-03-06):
+
+#### Changed:
+
+- Depend on pyqtgraph 0.11.0rc0 or higher instead of cx_pyqtgraph. All our pull requests
+  have been merged.
+
 ### v1.2.0 (2019-12-13):
 
 This release drops support for Python 2.7. Only Python 3.6 and higher are supported.
