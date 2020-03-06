@@ -7,9 +7,8 @@ Attribution-NonCommercial-NoDerivs 2.0 UK: England & Wales License.
 
 """
 import sys
-import cx_pyqtgraph as pg
-from cx_pyqtgraph import AxisItem, PlotItem, GraphicsView
-from cx_pyqtgraph import functions as fn
+import pyqtgraph as pg
+from pyqtgraph import functions as fn
 from PyQt5 import QtWidgets, QtCore, QtGui
 
 from .pyqt_labutils.dark_mode_support import LINE_COLOR_DARK, LINE_COLOR_LIGHT, isDarkWindow
@@ -18,7 +17,7 @@ from .pyqt_labutils.dark_mode_support import LINE_COLOR_DARK, LINE_COLOR_LIGHT, 
 pg.setConfigOptions(antialias=True, exitCleanup=False)
 
 
-class TemperatureHistoryPlot(GraphicsView):
+class TemperatureHistoryPlot(pg.GraphicsView):
 
     GREEN = (0, 204, 153)
     BLUE = (100, 171, 246)
@@ -37,8 +36,8 @@ class TemperatureHistoryPlot(GraphicsView):
 
     _init_done = False
 
-    def __init__(self):
-        GraphicsView.__init__(self)
+    def __init__(self, parent=None):
+        super().__init__(parent=parent)
 
         # create layout
         self.layout = pg.GraphicsLayout()
@@ -54,11 +53,11 @@ class TemperatureHistoryPlot(GraphicsView):
         axisItems2 = dict()
 
         for pos in ['bottom', 'left', 'top', 'right']:
-            axisItems1[pos] = AxisItem(orientation=pos, maxTickLength=-4)
-            axisItems2[pos] = AxisItem(orientation=pos, maxTickLength=-4)
+            axisItems1[pos] = pg.AxisItem(orientation=pos, maxTickLength=-4)
+            axisItems2[pos] = pg.AxisItem(orientation=pos, maxTickLength=-4)
 
-        self.p0 = PlotItem(axisItems=axisItems1)
-        self.p1 = PlotItem(axisItems=axisItems2)
+        self.p0 = pg.PlotItem(axisItems=axisItems1)
+        self.p1 = pg.PlotItem(axisItems=axisItems2)
         self.layout.addItem(self.p0, 0, 0, 5, 1)
         self.layout.addItem(self.p1, 5, 0, 1, 1)
 
