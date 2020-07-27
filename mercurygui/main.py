@@ -37,11 +37,12 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
 
     MAX_DISPLAY = 24*60*60
 
-    def __init__(self, feed):
+    def __init__(self, mercury):
         super(self.__class__, self).__init__()
         uic.loadUi(MAIN_UI_PATH, self)
 
-        self.feed = feed
+        self.mercury = mercury
+        self.feed = MercuryFeed(mercury)
 
         # sent Title font size relative to the system's default size
         scaling = 1.8
@@ -52,7 +53,7 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
         self.labelTitle.setFont(font)
 
         # create popup Widgets
-        self.connectionDialog = ConnectionDialog(self, feed.mercury, CONF)
+        self.connectionDialog = ConnectionDialog(self, self.mercury, CONF)
         self.readingsDialog = None
         self.modulesDialog = None
 
@@ -93,8 +94,8 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
 
         # check if mercury is connected, connect slots
         self.display_message('Looking for temperature controller at %s...' %
-                             self.feed.visa_address)
-        if self.feed.mercury.connected:
+                             self.mercury.visa_address)
+        if self.mercury.connected:
             self.update_gui_connection(connected=True)
 
         # start (stop) updates of GUI when mercury is connected (disconnected)
@@ -334,7 +335,7 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
 
     def log_temperature_data(self):
         # save temperature data to log file
-        if self.feed.mercury.connected:
+        if self.mercury.connected:
             self.save_temperature_data(self.log_file)
 
 # =================== CALLBACKS FOR SETTING CHANGES ===========================
@@ -406,7 +407,7 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
     def on_readings_clicked(self):
         # create readings overview window if not present
         if self.readingsDialog is None:
-            self.readingsDialog = ReadingsOverview(self.feed.mercury)
+            self.readingsDialog = ReadingsOverview(self.mercury)
         # show it
         self.readingsDialog.show()
 
@@ -607,9 +608,8 @@ def run():
     visa_library = CONF.get('Connection', 'VISA_LIBRARY')
 
     mercury = MercuryITC(mercury_address, visa_library, open_timeout=1)
-    feed = MercuryFeed(mercury)
 
-    mercury_gui = MercuryMonitorApp(feed)
+    mercury_gui = MercuryMonitorApp(mercury)
     mercury_gui.show()
 
     app.exec_()
