@@ -95,8 +95,7 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
         # check if mercury is connected, connect slots
         self.display_message('Looking for temperature controller at %s...' %
                              self.mercury.visa_address)
-        if self.mercury.connected:
-            self.update_gui_connection(connected=True)
+        self.update_gui_connection(self.mercury.connected)
 
         # start (stop) updates of GUI when mercury is connected (disconnected)
         # adjust clickable buttons upon connect / disconnect
@@ -222,12 +221,13 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
         self.h1_label.setText('Heater, %s V:' % readings['HeaterVolt'])
         self.h1_edit.updateValue(readings['HeaterPercent'])
 
-        is_heater_auto = readings['HeaterAuto'] == 'ON'
-        self.h1_edit.setReadOnly(is_heater_auto)
-        self.h1_edit.setEnabled(not is_heater_auto)
-        self.h2_checkbox.setChecked(is_heater_auto)
-
-        if not self.feed.heater:
+        if self.feed.heater:
+            is_heater_auto = readings['HeaterAuto'] == 'ON'
+            self.h1_edit.setReadOnly(is_heater_auto)
+            self.h1_edit.setEnabled(not is_heater_auto)
+            self.h2_checkbox.setChecked(is_heater_auto)
+        else:
+            self.h1_edit.setReadOnly(True)
             self.h1_edit.setEnabled(False)
             self.h2_checkbox.setEnabled(False)
 
@@ -235,12 +235,13 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
         self.gf1_edit.updateValue(readings['FlowPercent'])
         self.gf1_label.setText('Gas flow (min = %s%%):' % readings['FlowMin'])
 
-        is_gf_auto = readings['FlowAuto'] == 'ON'
-        self.gf2_checkbox.setChecked(is_gf_auto)
-        self.gf1_edit.setEnabled(not is_gf_auto)
-        self.gf1_edit.setReadOnly(is_gf_auto)
-
-        if not self.feed.gasflow:
+        if self.feed.gasflow:
+            is_gf_auto = readings['FlowAuto'] == 'ON'
+            self.gf2_checkbox.setChecked(is_gf_auto)
+            self.gf1_edit.setReadOnly(is_gf_auto)
+            self.gf1_edit.setEnabled(not is_gf_auto)
+        else:
+            self.gf1_edit.setEnabled(True)
             self.gf1_edit.setEnabled(False)
             self.gf2_checkbox.setEnabled(False)
 
