@@ -67,7 +67,7 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
         w = self.canvas.y_axis_width
         self.gridLayoutTop.setContentsMargins(w, 0, w, 0)
         self.gridLayoutBottom.setContentsMargins(w, 0, w, 0)
-        self.horizontalSlider.setMaximum(int(self.feed.refresh*self.MAX_DISPLAY/60))
+        self.horizontalSlider.setMaximum(self.MAX_DISPLAY/60)
 
         # connect slider to plot
         self.horizontalSlider.valueChanged.connect(self.on_slider_changed)
@@ -102,7 +102,7 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
         self.feed.connected_signal.connect(self.update_gui_connection)
 
         # get new readings every second, update UI
-        self.feed.new_readings_signal.connect(self.update_text)
+        self.feed.new_readings_signal.connect(self.update_controls)
         self.feed.new_readings_signal.connect(self.update_plot)
 
         # set up logging to file
@@ -212,7 +212,7 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
         self.statusbar.showMessage('%s' % text)
 
     @QtCore.pyqtSlot(object)
-    def update_text(self, readings):
+    def update_controls(self, readings):
         """
         Parses readings for the MercuryMonitorApp and updates UI accordingly
         """
