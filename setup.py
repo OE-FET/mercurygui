@@ -2,8 +2,8 @@ from setuptools import setup, find_packages
 
 setup(
     name='mercurygui',
-    version='1.2.1',
-    description="",
+    version='2.0.0',
+    description='',
     author='Sam Schott',
     author_email='ss2151@cam.ac.uk',
     url='https://github.com/oe-fet/mercurygui.git',

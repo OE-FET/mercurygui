@@ -1,9 +1,11 @@
-### v1.2.1 (2020-03-06):
+### v2.0.0 (2020-07-27):
 
 #### Changed:
 
-- Depend on pyqtgraph 0.11.0rc0 or higher instead of cx_pyqtgraph. All our pull requests
-  have been merged.
+- `MercuryMonitorApp` now takes a `MercuryITC` instance as a first argument instead of
+  a `MercuryFeed` instance. The feed will be created internally.
+- If a temperature module does not have an attached heater or gas flow module, the
+  corresponding GUI elements are greyed out.
 
 ### v1.2.0 (2019-12-13):
 
