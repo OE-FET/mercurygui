@@ -226,6 +226,7 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
             self.h1_edit.setReadOnly(is_heater_auto)
             self.h1_edit.setEnabled(not is_heater_auto)
             self.h2_checkbox.setChecked(is_heater_auto)
+            self.h2_checkbox.setEnabled(True)
         else:
             self.h1_edit.setReadOnly(True)
             self.h1_edit.setEnabled(False)
@@ -237,9 +238,10 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
 
         if self.feed.gasflow:
             is_gf_auto = readings['FlowAuto'] == 'ON'
-            self.gf2_checkbox.setChecked(is_gf_auto)
             self.gf1_edit.setReadOnly(is_gf_auto)
             self.gf1_edit.setEnabled(not is_gf_auto)
+            self.gf2_checkbox.setChecked(is_gf_auto)
+            self.gf2_checkbox.setEnabled(True)
         else:
             self.gf1_edit.setEnabled(True)
             self.gf1_edit.setEnabled(False)
