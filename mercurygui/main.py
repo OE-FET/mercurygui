@@ -216,6 +216,7 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
         """
         Parses readings for the MercuryMonitorApp and updates UI accordingly
         """
+
         # heater signals
         self.h1_label.setText('Heater, %s V:' % readings['HeaterVolt'])
         self.h1_edit.updateValue(readings['HeaterPercent'])
@@ -225,6 +226,10 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
         self.h1_edit.setEnabled(not is_heater_auto)
         self.h2_checkbox.setChecked(is_heater_auto)
 
+        if not self.feed.heater:
+            self.h1_edit.setEnabled(False)
+            self.h2_checkbox.setEnabled(False)
+
         # gas flow signals
         self.gf1_edit.updateValue(readings['FlowPercent'])
         self.gf1_label.setText('Gas flow (min = %s%%):' % readings['FlowMin'])
@@ -233,6 +238,10 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
         self.gf2_checkbox.setChecked(is_gf_auto)
         self.gf1_edit.setEnabled(not is_gf_auto)
         self.gf1_edit.setReadOnly(is_gf_auto)
+
+        if not self.feed.gasflow:
+            self.gf1_edit.setEnabled(False)
+            self.gf2_checkbox.setEnabled(False)
 
         # temperature signals
         self.t1_reading.setText('%s K' % round(readings['Temp'], 3))
