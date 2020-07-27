@@ -194,6 +194,7 @@ class DataCollectionWorker(QtCore.QObject):
                     self.running = True
 
     def get_readings(self):
+
         # read temperature data
         self.readings['Temp'] = self.temperature.temp[0]
         self.readings['TempSetpoint'] = self.temperature.loop_tset
@@ -209,6 +210,7 @@ class DataCollectionWorker(QtCore.QObject):
             self.readings['HeaterVolt'] = float('nan')
             self.readings['HeaterAuto'] = 'OFF'
             self.readings['HeaterPercent'] = 0  # 'NaN' values are not accepted by spinbox
+
         # read gas flow data
         if self.gasflow:  # if aux module is configured for temperature sensor
             self.readings['FlowAuto'] = self.temperature.loop_faut
