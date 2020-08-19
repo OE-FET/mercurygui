@@ -214,6 +214,7 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
             self.r2_checkbox.setEnabled(True)
             self.gf1_edit.setEnabled(True)
             self.gf2_checkbox.setEnabled(True)
+            self.gf3_edit.setEnabled(True)
             self.h1_edit.setEnabled(True)
             self.h2_checkbox.setEnabled(True)
 
@@ -234,6 +235,7 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
             self.r2_checkbox.setEnabled(False)
             self.gf1_edit.setEnabled(False)
             self.gf2_checkbox.setEnabled(False)
+            self.gf3_edit.setEnabled(False)
             self.h1_edit.setEnabled(False)
             self.h2_checkbox.setEnabled(False)
 
@@ -268,7 +270,7 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
 
         # gas flow signals
         self.gf1_edit.updateValue(readings['FlowPercent'])
-        self.gf1_label.setText('Gas flow (min = %s%%):' % readings['FlowMin'])
+        self.gf3_edit.updateValue(readings['FlowMin'])
 
         if self.feed.gasflow:
             is_gf_auto = readings['FlowAuto'] == 'ON'
@@ -276,10 +278,11 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
             self.gf1_edit.setEnabled(not is_gf_auto)
             self.gf2_checkbox.setChecked(is_gf_auto)
             self.gf2_checkbox.setEnabled(True)
+            self.gf3_edit.setEnabled(True)
         else:
-            self.gf1_edit.setEnabled(True)
             self.gf1_edit.setEnabled(False)
             self.gf2_checkbox.setEnabled(False)
+            self.gf3_edit.setEnabled(False)
 
         # temperature signals
         self.t1_reading.setText('%s K' % round(readings['Temp'], 3))
@@ -424,7 +427,12 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
     @QtCore.pyqtSlot()
     def change_flow(self):
         self.feed.temperature.loop_fset = self.gf1_edit.value()
-        self.display_message('Gas flow  = %s%%' % self.gf1_edit.value())
+        self.display_message('Gas flow = %s%%' % self.gf1_edit.value())
+
+    @QtCore.pyqtSlot()
+    def change_flow_min(self):
+        self.feed.gasflow.gmin = self.gf3_edit.value()
+        self.display_message('Gas flow min = %s%%' % self.gf3_edit.value())
 
     @QtCore.pyqtSlot(bool)
     def change_flow_auto(self, checked):
