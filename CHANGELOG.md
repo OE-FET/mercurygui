@@ -1,4 +1,12 @@
-### v2.0.0 (2020-07-27):
+### v2.1.0
+
+#### Changed:
+
+- Select the current temperature sensor from a menu instead of a dialog.
+- Allow assigning gasflow and heater modules to a temperature sensor from the GUI.
+- Clear the plot when switching sensors.
+
+### v2.0.0
 
 #### Changed:
 
@@ -7,7 +15,7 @@
 - If a temperature module does not have an attached heater or gas flow module, the
   corresponding GUI elements are greyed out.
 
-### v1.2.0 (2019-12-13):
+### v1.2.0
 
 This release drops support for Python 2.7. Only Python 3.6 and higher are supported.
 
@@ -21,7 +29,7 @@ This release drops support for Python 2.7. Only Python 3.6 and higher are suppor
 
 - Python 2.7 support.
 
-### v1.1.3 (2019-10-09):
+### v1.1.3
 
 This release focuses on cosmetic improvements, including dark mode support.
 
@@ -34,7 +42,7 @@ This release focuses on cosmetic improvements, including dark mode support.
 - Support for dark interface themes, such as the dark mode in macOS Mojave. This will
   require a version of PyQt / Qt which supports system themes, such as v5.12 for macOS.
 
-###  v1.1.2 (2019-08-04)
+###  v1.1.2
 
 #### Changed:
 
@@ -47,14 +55,14 @@ This release focuses on cosmetic improvements, including dark mode support.
 - Fixed a bug which would cause saving of log files to fail if no heater module is
   connected.
 
-### v1.1.1 (2019-04-23)
+### v1.1.1
 
 #### Changed:
 
 - Switched plotting to from Matplotlib to PyQtGraph for better performance.
 - Switched to scientific spin boxes.
 
-### v1.1.0 (2019-04-23)
+### v1.1.0
 
 #### Added:
 
