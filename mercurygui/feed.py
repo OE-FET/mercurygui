@@ -223,6 +223,17 @@ class DataCollectionWorker(QtCore.QObject):
             self.readings['FlowMin'] = float('nan')
             self.readings['FlowSetpoint'] = float('nan')
 
+        # read alarms
+        alarms = self.mercury.alarms
+
+        uids = [m.uid for m in (self.temperature, self.gasflow, self.heater) if m]
+
+        for key in list(alarms.keys()):
+            if key not in uids:
+                del alarms[key]
+
+        self.readings['Alarms'] = alarms
+
         self.readings_signal.emit(self.readings)
 
     def select_temp_sensor(self, temp_nick):
