@@ -293,11 +293,16 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
         self.r2_checkbox.setChecked(is_ramp_enable)
 
         # alarms
-        if readings['Alarms']:
-            message = ''
-            for k, v in readings['Alarms'].items():
-                message += '{}: {} '.format(k, v)
-            self.display_message(message)
+        alarm_str = ''
+        for k, v in readings['Alarms'].items():
+            alarm_str += '{}: {} '.format(k, v)
+
+        if alarm_str:
+            self.alarm_label.setText('Alarms: ' + alarm_str)
+            self.alarm_label.setStyleSheet('QLabel { color : red; }')
+        else:
+            self.alarm_label.setText('Alarms: --')
+            self.alarm_label.setStyleSheet('')
 
     @QtCore.pyqtSlot(object)
     def update_plot(self, readings):
