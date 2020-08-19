@@ -89,13 +89,45 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
 
         # restore previous window geometry
         self.restore_geometry()
-        # Connect menu bar actions
-        self.set_up_menubar()
+
+        # connect to callbacks
+        self.modulesAction.triggered.connect(self.on_module_selection_clicked)
+        self.showLogAction.triggered.connect(self.on_log_clicked)
+        self.exitAction.triggered.connect(self.exit_)
+        self.readingsAction.triggered.connect(self.on_readings_clicked)
+        self.connectAction.triggered.connect(self.feed.connect)
+        self.disconnectAction.triggered.connect(self.feed.disconnect)
+        self.updateAddressAction.triggered.connect(self.connectionDialog.open)
+
+        self.t2_edit.returnPressed.connect(self.change_t_setpoint)
+        self.r1_edit.returnPressed.connect(self.change_ramp)
+        self.r2_checkbox.clicked.connect(self.change_ramp_auto)
+        self.gf1_edit.returnPressed.connect(self.change_flow)
+        self.gf2_checkbox.clicked.connect(self.change_flow_auto)
+        self.h1_edit.returnPressed.connect(self.change_heater)
+        self.h2_checkbox.clicked.connect(self.change_heater_auto)
+
+        # initially disable menu bar items, will be enabled later individually
+        self.connectAction.setEnabled(True)
+        self.disconnectAction.setEnabled(False)
+        self.modulesAction.setEnabled(False)
+        self.readingsAction.setEnabled(False)
+
+        self.build_sensor_menu()
+
+        # initially disable controls, will be enabled later individually
+        self.t2_edit.setEnabled(False)
+        self.r1_edit.setEnabled(False)
+        self.r2_checkbox.setEnabled(False)
+        self.gf1_edit.setEnabled(False)
+        self.gf2_checkbox.setEnabled(False)
+        self.h1_edit.setEnabled(False)
+        self.h2_checkbox.setEnabled(False)
 
         # check if mercury is connected, connect slots
         self.display_message('Looking for temperature controller at %s...' %
                              self.mercury.visa_address)
-        self.update_gui_connection(self.mercury.connected)
+        self.update_gui_connection(self.feed.connected)
 
         # start (stop) updates of GUI when mercury is connected (disconnected)
         # adjust clickable buttons upon connect / disconnect
@@ -107,6 +139,8 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
 
         # set up logging to file
         self.setup_logging()
+
+        self.feed.connect()
 
 # =================== BASIC UI SETUP ==========================================
 
@@ -136,25 +170,6 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
         else:
             self.hide()
 
-    def set_up_menubar(self):
-        """
-        Connects menu bar items to callbacks, sets their initial activation.
-        """
-        # connect to callbacks
-        self.modulesAction.triggered.connect(self.on_module_selection_clicked)
-        self.showLogAction.triggered.connect(self.on_log_clicked)
-        self.exitAction.triggered.connect(self.exit_)
-        self.readingsAction.triggered.connect(self.on_readings_clicked)
-        self.connectAction.triggered.connect(self.feed.connect)
-        self.disconnectAction.triggered.connect(self.feed.disconnect)
-        self.updateAddressAction.triggered.connect(self.connectionDialog.open)
-
-        # initially disable menu bar items, will be enabled later individually
-        self.connectAction.setEnabled(True)
-        self.disconnectAction.setEnabled(False)
-        self.modulesAction.setEnabled(False)
-        self.readingsAction.setEnabled(False)
-
     def on_slider_changed(self):
         # determine first plotted data point
         sv = self.horizontalSlider.value()
@@ -164,8 +179,24 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
         self.canvas.p0.setXRange(-sv, 0)
         self.canvas.p0.enableAutoRange(x=False, y=True)
 
+    def build_sensor_menu(self):
+        self.sensorMenu = QtWidgets.QMenu()
+        self.sensorActionGroup = QtWidgets.QActionGroup(self)
+
+        for nick in self._get_nicks(MercuryITC_TEMP):
+            action = QtWidgets.QAction(nick)
+            action.setData(nick)
+            action.setCheckable(True)
+            action.setChecked(nick == self.feed.temperature.nick)
+            self.sensorMenu.addAction(action)
+            self.sensorActionGroup.addAction(action)
+            self.sensorActionGroup.triggered.connect(self.on_sensor_selected)
+
+        self.sensorAction.setMenu(self.sensorMenu)
+
     @QtCore.pyqtSlot(bool)
     def update_gui_connection(self, connected):
+
         if connected:
             self.display_message('Connection established.')
             self.led.setChecked(True)
@@ -175,15 +206,16 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
             self.disconnectAction.setEnabled(True)
             self.modulesAction.setEnabled(True)
             self.readingsAction.setEnabled(True)
+            self.sensorAction.setEnabled(True)
 
-            # connect user input to change mercury settings
-            self.t2_edit.returnPressed.connect(self.change_t_setpoint)
-            self.r1_edit.returnPressed.connect(self.change_ramp)
-            self.r2_checkbox.clicked.connect(self.change_ramp_auto)
-            self.gf1_edit.returnPressed.connect(self.change_flow)
-            self.gf2_checkbox.clicked.connect(self.change_flow_auto)
-            self.h1_edit.returnPressed.connect(self.change_heater)
-            self.h2_checkbox.clicked.connect(self.change_heater_auto)
+            # enable controls
+            self.t2_edit.setEnabled(True)
+            self.r1_edit.setEnabled(True)
+            self.r2_checkbox.setEnabled(True)
+            self.gf1_edit.setEnabled(True)
+            self.gf2_checkbox.setEnabled(True)
+            self.h1_edit.setEnabled(True)
+            self.h2_checkbox.setEnabled(True)
 
         elif not connected:
             self.display_error('Connection lost.')
@@ -196,14 +228,16 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
             self.modulesAction.setEnabled(False)
             self.readingsAction.setEnabled(False)
 
-            # disconnect user input from mercury
-            self.t2_edit.returnPressed.disconnect(self.change_t_setpoint)
-            self.r1_edit.returnPressed.disconnect(self.change_ramp)
-            self.r2_checkbox.clicked.disconnect(self.change_ramp_auto)
-            self.gf1_edit.returnPressed.disconnect(self.change_flow)
-            self.gf2_checkbox.clicked.disconnect(self.change_flow_auto)
-            self.h1_edit.returnPressed.disconnect(self.change_heater)
-            self.h2_checkbox.clicked.disconnect(self.change_heater_auto)
+            # disable controls
+            self.t2_edit.setEnabled(False)
+            self.r1_edit.setEnabled(False)
+            self.r2_checkbox.setEnabled(False)
+            self.gf1_edit.setEnabled(False)
+            self.gf2_checkbox.setEnabled(False)
+            self.h1_edit.setEnabled(False)
+            self.h2_checkbox.setEnabled(False)
+
+        self.build_sensor_menu()
 
     def display_message(self, text):
         self.statusbar.showMessage('%s' % text, 5000)
@@ -276,6 +310,18 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
         self.canvas.update_data(self.xdata_min_zero, self.ydata_tmpr,
                                 self.ydata_gflw, self.ydata_htr)
 
+    def clear_plot(self):
+        # append data for plotting
+        self.xdata = np.array([])
+        self.xdata_min_zero = np.array([])
+        self.ydata_tmpr = np.array([])
+        self.ydata_gflw = np.array([])
+        self.ydata_htr = np.array([])
+
+        # update plot
+        self.canvas.update_data(self.xdata, self.ydata_tmpr,
+                                self.ydata_gflw, self.ydata_htr)
+
 # =================== LOGGING DATA ============================================
 
     def setup_logging(self):
@@ -338,7 +384,7 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
 
     def log_temperature_data(self):
         # save temperature data to log file
-        if self.mercury.connected:
+        if self.feed.connected:
             self.save_temperature_data(self.log_file)
 
 # =================== CALLBACKS FOR SETTING CHANGES ===========================
@@ -406,6 +452,18 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
 
 # ========================== CALLBACKS FOR MENU BAR ===========================
 
+    def on_sensor_selected(self, action):
+
+        nick = action.data()
+
+        try:
+            self.feed.select_temp_sensor(nick)
+        except IOError:
+            # the selected module name does not exists -> rebuild our list
+            self.build_sensor_menu()
+        else:
+            self.clear_plot()
+
     @QtCore.pyqtSlot()
     def on_readings_clicked(self):
         # create readings overview window if not present
@@ -418,7 +476,7 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
     def on_module_selection_clicked(self):
         # create readings overview window if not present
         if self.modulesDialog is None:
-            self.modulesDialog = ModulesDialog(self.feed)
+            self.modulesDialog = ModulesDialog(self.mercury)
         # show it
         self.modulesDialog.open()
 
@@ -434,6 +492,12 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
             subprocess.Popen(['open', self.logging_path])
         else:
             subprocess.Popen(['xdg-open', self.logging_path])
+
+    def _get_nicks(self, sensor_type):
+        if self.feed.connected:
+            return list(m.nick for m in self.mercury.modules if type(m) == sensor_type)
+        else:
+            return []
 
 
 # noinspection PyUnresolvedReferences
@@ -506,6 +570,7 @@ class ReadingsOverview(QtWidgets.QDialog):
 
     def __init__(self, mercury, parent=None):
         super(self.__class__, self).__init__(parent=parent)
+        self.setWindowTitle('Readings Overview')
         self.mercury = mercury
         self.setupUi(self)
 
@@ -547,6 +612,10 @@ class ReadingsOverview(QtWidgets.QDialog):
             self.tabWidget.currentWidget().get_alarms()
 
 
+class _NoModule:
+    nick = 'None'
+
+
 class ModulesDialog(QtWidgets.QDialog):
     """
     Provides a user dialog to select the modules for the feed.
@@ -554,50 +623,52 @@ class ModulesDialog(QtWidgets.QDialog):
 
     accepted = QtCore.pyqtSignal(object)
 
-    def __init__(self, mercury_feed, parent=None):
+    def __init__(self, mercury, parent=None):
         super(self.__class__, self).__init__(parent=parent)
         uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                 'module_dialog.ui'), self)
 
-        self.feed = mercury_feed
-        self.modules = self.feed.mercury.modules
+        self.mercury = mercury
 
-        def get_nicks(type_):
-            return list(m.nick for m in self.modules if type(m) == type_)
+        self.temp_modules = self._get_modules_for_type(MercuryITC_TEMP)
+        self.htr_modules = self._get_modules_for_type(MercuryITC_HTR)
+        self.aux_modules = self._get_modules_for_type(MercuryITC_AUX)
 
-        self.temp_module_nicks = get_nicks(MercuryITC_TEMP)
-        self.htr_module_nicks = get_nicks(MercuryITC_HTR)
-        self.aux_module_nicks = get_nicks(MercuryITC_AUX)
+        self.htr_modules.append(_NoModule())
+        self.aux_modules.append(_NoModule())
 
-        self.htr_module_nicks.append('None')
-        self.aux_module_nicks.append('None')
-
-        self.comboBoxTEMP.addItems(self.temp_module_nicks)
-        self.comboBoxHTR.addItems(self.htr_module_nicks)
-        self.comboBoxAUX.addItems(self.aux_module_nicks)
+        self.comboBoxTEMP.addItems([m.nick for m in self.temp_modules])
+        self.comboBoxHTR.addItems([m.nick for m in self.htr_modules])
+        self.comboBoxAUX.addItems([m.nick for m in self.aux_modules])
 
         # get current modules
-        self.comboBoxTEMP.setCurrentText(self.feed.temperature.nick)
-        self.comboBoxHTR.setCurrentText(self.feed.temperature.loop_htr)
-        self.comboBoxAUX.setCurrentText(self.feed.temperature.loop_aux)
+        self.comboBoxTEMP.setCurrentIndex(0)
+        self.comboBoxHTR.setCurrentText(self.temp_modules[0].loop_htr)
+        self.comboBoxAUX.setCurrentText(self.temp_modules[0].loop_aux)
 
         # connect callbacks
-        self.comboBoxTEMP.currentTextChanged.connect(self._on_comboBoxTEMP_textChanged)
-        self.buttonBox.accepted.connect(self._on_accept)
+        self.comboBoxTEMP.currentIndexChanged.connect(self.on_temp_selected)
+        self.buttonBox.accepted.connect(self.on_accept)
 
-    @QtCore.pyqtSlot(str)
-    def _on_comboBoxTEMP_textChanged(self, text):
+    @QtCore.pyqtSlot(int)
+    def on_temp_selected(self, index):
         # update content of heater and gasflow combo boxes
-        temp_module = next(m for m in self.modules if m.nick == text)
-
-        self.comboBoxHTR.setCurrentText(temp_module.loop_htr)
-        self.comboBoxAUX.setCurrentText(temp_module.loop_aux)
+        self.comboBoxHTR.setCurrentText(self.temp_modules[index].loop_htr)
+        self.comboBoxAUX.setCurrentText(self.temp_modules[index].loop_aux)
 
     @QtCore.pyqtSlot()
-    def _on_accept(self):
-        temp_nick = self.comboBoxTEMP.currentText()
-        self.feed.select_temp_sensor(temp_nick)  # updated feed
-        CONF.set('MercuryFeed', 'temperature_module', temp_nick)  # write to config file
+    def on_accept(self):
+        # assign new heater and gasflow modules
+        temp_index = self.comboBoxTEMP.currentIndex()
+        htr_index = self.comboBoxHTR.currentIndex()
+        aux_index = self.comboBoxAUX.currentIndex()
+
+        self.temp_modules[temp_index].loop_htr = self.htr_modules[htr_index].nick
+        self.temp_modules[temp_index].loop_aux = self.aux_modules[aux_index].nick
+
+    def _get_modules_for_type(self, sensor_type):
+
+        return [m for m in self.mercury.modules if type(m) is sensor_type]
 
 
 def run():

@@ -353,13 +353,14 @@
      <x>0</x>
      <y>0</y>
      <width>566</width>
-     <height>22</height>
+     <height>24</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_MercuryiTC">
     <property name="title">
      <string>MercuryiTC</string>
     </property>
+    <addaction name="sensorAction"/>
     <addaction name="modulesAction"/>
     <addaction name="readingsAction"/>
     <addaction name="separator"/>
@@ -409,9 +410,9 @@ QStatusBar::item {border: 0px solid black };</string>
     <enum>QAction::NoRole</enum>
    </property>
   </action>
-  <action name="modulesAction">
+  <action name="sensorAction">
    <property name="text">
-    <string>&amp;Select Modules...</string>
+    <string>&amp;Temperature Sensors</string>
    </property>
   </action>
   <action name="readingsAction">
@@ -453,6 +454,11 @@ QStatusBar::item {border: 0px solid black };</string>
    </property>
    <property name="shortcut">
     <string>Meta+Ctrl+Z</string>
+   </property>
+  </action>
+  <action name="modulesAction">
+   <property name="text">
+    <string>Assign modules...</string>
    </property>
   </action>
  </widget>

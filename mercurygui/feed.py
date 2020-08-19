@@ -77,23 +77,12 @@ class MercuryFeed(QtCore.QObject):
         self.thread = None
         self.worker = None
 
+        self.connected = False
+
         # get default modules to read from
         self.temp_nick = CONF.get('MercuryFeed', 'temperature_module')
 
-        if self.mercury.connected:
-            self.start_worker()
-            self.connected_signal.emit(True)
-
     # BASE FUNCTIONALITY CODE
-
-    def disconnect(self):
-        # stop worker thread
-        if self.worker:
-            self.worker.running = False
-
-        # disconnect mercury
-        self.connected_signal.emit(False)
-        self.mercury.disconnect()
 
     def connect(self):
         # connect to mercury
@@ -103,7 +92,20 @@ class MercuryFeed(QtCore.QObject):
         if self.mercury.connected:
             # start / resume worker
             self.start_worker()
+            self.connected = True
             self.connected_signal.emit(True)
+        else:
+            self.connected = False
+
+    def disconnect(self):
+        # stop worker thread
+        if self.worker:
+            self.worker.running = False
+
+        # disconnect mercury
+        self.connected = False
+        self.connected_signal.emit(False)
+        self.mercury.disconnect()
 
     def exit_(self):
         if self.worker:
