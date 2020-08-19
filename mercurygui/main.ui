@@ -297,7 +297,24 @@
         </property>
        </widget>
       </item>
-      <item row="2" column="3" rowspan="3">
+      <item row="7" column="0" colspan="7">
+       <widget class="QLabel" name="alarm_label">
+        <property name="text">
+         <string>Alarms: --</string>
+        </property>
+        <property name="margin">
+         <number>5</number>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="4">
+       <widget class="QLabel" name="gf3_label">
+        <property name="text">
+         <string>Gas flow minimum:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="3" rowspan="5">
        <spacer name="horizontalSpacer_1">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
@@ -312,20 +329,6 @@
          </size>
         </property>
        </spacer>
-      </item>
-      <item row="5" column="0" colspan="5">
-       <widget class="QLabel" name="gf3_label">
-        <property name="text">
-         <string>Gas flow minimum (automatic control only):</string>
-        </property>
-       </widget>
-      </item>
-      <item row="7" column="0" colspan="7">
-       <widget class="QLabel" name="alarm_label">
-        <property name="text">
-         <string>Alarms: --</string>
-        </property>
-       </widget>
       </item>
      </layout>
     </item>
