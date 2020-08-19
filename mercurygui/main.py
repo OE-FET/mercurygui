@@ -297,12 +297,7 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
         for k, v in readings['Alarms'].items():
             alarm_str += '{}: {} '.format(k, v)
 
-        if alarm_str:
-            self.alarm_label.setText('Alarms: ' + alarm_str)
-            self.alarm_label.setStyleSheet('QLabel { color : red; }')
-        else:
-            self.alarm_label.setText('Alarms: --')
-            self.alarm_label.setStyleSheet('')
+        self.alarm_label.setText(alarm_str)
 
     @QtCore.pyqtSlot(object)
     def update_plot(self, readings):
