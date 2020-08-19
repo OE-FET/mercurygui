@@ -72,8 +72,6 @@ class MercuryFeed(QtCore.QObject):
 
         self.refresh = refresh
         self.mercury = mercury
-        self.visa_address = mercury.visa_address
-        self.visa_library = mercury.visa_library
         self.rm = mercury.rm
 
         self.thread = None
@@ -153,7 +151,7 @@ class MercuryFeed(QtCore.QObject):
         self.new_readings_signal.emit(self.readings)
 
     def __repr__(self):
-        return '<%s(%s)>' % (type(self).__name__, self.visa_address)
+        return '<{}({})>'.format(self.__class__.__name__, self.mercury)
 
 
 class DataCollectionWorker(QtCore.QObject):
