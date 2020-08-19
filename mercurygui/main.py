@@ -289,6 +289,13 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
         is_ramp_enable = readings['TempRampEnable'] == 'ON'
         self.r2_checkbox.setChecked(is_ramp_enable)
 
+        # alarms
+        if readings['Alarms']:
+            message = ''
+            for k, v in readings['Alarms'].items():
+                message += '{}: {} '.format(k, v)
+            self.display_message(message)
+
     @QtCore.pyqtSlot(object)
     def update_plot(self, readings):
         # append data for plotting
@@ -553,13 +560,8 @@ class ReadingsTab(QtWidgets.QWidget):
         """Gets alarms of associated module."""
 
         # get alarms for all modules
-        address = self.module.address.split(':')
-        short_address = address[1]
-        if self.module.nick == 'LOOP':
-            short_address = short_address.split('.')
-            short_address = short_address[0] + '.loop1'
         try:
-            alarm = self.mercury.alarms[short_address]
+            alarm = self.mercury.alarms[self.module.uid]
         except KeyError:
             alarm = '--'
 
