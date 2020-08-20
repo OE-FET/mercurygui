@@ -189,6 +189,13 @@ class DataCollectionWorker(QtCore.QObject):
 
     def get_readings(self):
 
+        # update assigned modules
+        htr_nick = self.temperature.loop_htr
+        aux_nick = self.temperature.loop_aux
+
+        self.heater = next((m for m in self.mercury.modules if m.nick == htr_nick), None)
+        self.gasflow = next((m for m in self.mercury.modules if m.nick == aux_nick), None)
+
         # read temperature data
         self.readings['Temp'] = self.temperature.temp[0]
         self.readings['TempSetpoint'] = self.temperature.loop_tset
@@ -240,13 +247,6 @@ class DataCollectionWorker(QtCore.QObject):
 
         if match:
             self.temperature = match
-
-            htr_nick = self.temperature.loop_htr
-            aux_nick = self.temperature.loop_aux
-
-            self.heater = next((m for m in self.mercury.modules if m.nick == htr_nick), None)
-            self.gasflow = next((m for m in self.mercury.modules if m.nick == aux_nick), None)
-
         else:
             raise IOError('Temperature sensor "{}" not found'.format(temp_nick))
 
