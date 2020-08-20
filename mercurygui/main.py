@@ -36,6 +36,7 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
     QUIT_ON_CLOSE = True
 
     MAX_DISPLAY = 24*60*60
+    TITLE_TEMPLATE = 'MerciryiTC Control'
 
     def __init__(self, mercury):
         super(self.__class__, self).__init__()
@@ -45,7 +46,7 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
         self.feed = MercuryFeed(mercury)
 
         # sent Title font size relative to the system's default size
-        scaling = 1.8
+        scaling = 1.5
         font = self.labelTitle.font()
         defaultFontSize = QtWidgets.QLabel('test').font().pointSize()
         fontSize = round(defaultFontSize*scaling, 1)
@@ -252,6 +253,8 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
         """
         Parses readings for the MercuryMonitorApp and updates UI accordingly
         """
+
+        self.labelTitle.setText(self.TITLE_TEMPLATE + ': ' + self.feed.temperature_module_nick)
 
         # heater signals
         self.h1_label.setText('Heater, %s V:' % readings['HeaterVolt'])
