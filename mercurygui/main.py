@@ -676,13 +676,26 @@ class ModulesDialog(QtWidgets.QDialog):
 
     @QtCore.pyqtSlot()
     def on_accept(self):
+
         # assign new heater and gasflow modules
         temp_index = self.comboBoxTEMP.currentIndex()
         htr_index = self.comboBoxHTR.currentIndex()
         aux_index = self.comboBoxAUX.currentIndex()
 
-        self.temp_modules[temp_index].loop_htr = self.htr_modules[htr_index].nick
-        self.temp_modules[temp_index].loop_aux = self.aux_modules[aux_index].nick
+        htr_nick = self.comboBoxHTR.currentText()
+        aux_nick = self.comboBoxAUX.currentText()
+
+        # remove assignment from other loops
+        for module in self.temp_modules:
+            if module is not self.temp_modules[temp_index]:
+                if module.loop_htr == htr_nick:
+                    module.loop_htr = 'None'
+                if module.loop_aux == aux_nick:
+                    module.loop_aux = 'None'
+
+        # add assignment to selected loop
+        self.temp_modules[temp_index].loop_htr = htr_nick
+        self.temp_modules[temp_index].loop_aux = aux_nick
 
     def _get_modules_for_type(self, sensor_type):
 
