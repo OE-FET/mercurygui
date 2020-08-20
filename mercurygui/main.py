@@ -36,7 +36,7 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
     QUIT_ON_CLOSE = True
 
     MAX_DISPLAY = 24*60*60
-    TITLE_TEMPLATE = 'MerciryiTC Control'
+    TITLE_TEMPLATE = 'MercuryiTC Control'
 
     def __init__(self, mercury):
         super(self.__class__, self).__init__()
@@ -301,6 +301,11 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
             alarm_str += '{}: {} '.format(k, v)
 
         self.alarm_label.setText(alarm_str)
+
+        if alarm_str:
+            self.alarm_label.show()
+        else:
+            self.alarm_label.hide()
 
     @QtCore.pyqtSlot(object)
     def update_plot(self, readings):

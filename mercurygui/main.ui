@@ -35,50 +35,93 @@
       <property name="rightMargin">
        <number>30</number>
       </property>
-      <item row="8" column="0" colspan="7">
-       <widget class="QLabel" name="alarm_label">
-        <property name="styleSheet">
-         <string notr="true">color: red</string>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0" colspan="7">
-       <spacer name="verticalSpacer">
+      <item row="2" column="3" rowspan="5">
+       <spacer name="horizontalSpacer_1">
         <property name="orientation">
-         <enum>Qt::Vertical</enum>
+         <enum>Qt::Horizontal</enum>
         </property>
         <property name="sizeType">
-         <enum>QSizePolicy::Fixed</enum>
+         <enum>QSizePolicy::Expanding</enum>
         </property>
         <property name="sizeHint" stdset="0">
          <size>
-          <width>2</width>
-          <height>3</height>
+          <width>4</width>
+          <height>0</height>
          </size>
         </property>
        </spacer>
       </item>
-      <item row="3" column="4">
-       <widget class="QLabel" name="r1_label">
+      <item row="2" column="0">
+       <widget class="QLabel" name="t1_label">
+        <property name="maximumSize">
+         <size>
+          <width>90</width>
+          <height>16777215</height>
+         </size>
+        </property>
         <property name="text">
-         <string>Ramp speed:</string>
+         <string>Temperature:</string>
         </property>
        </widget>
       </item>
-      <item row="2" column="4">
-       <widget class="QLabel" name="t2_label">
+      <item row="6" column="0" colspan="3">
+       <widget class="QCheckBox" name="h2_checkbox">
         <property name="text">
-         <string>Temperature setpoint:</string>
+         <string>Automatic heater control</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
         </property>
        </widget>
       </item>
-      <item row="4" column="4">
-       <widget class="QLabel" name="gf1_label">
+      <item row="2" column="1" colspan="2">
+       <widget class="QLabel" name="t1_reading">
+        <property name="minimumSize">
+         <size>
+          <width>60</width>
+          <height>0</height>
+         </size>
+        </property>
         <property name="text">
-         <string>Gas flow:</string>
+         <string>-- K</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="4">
+       <widget class="QLabel" name="gf3_label">
+        <property name="text">
+         <string>Gas flow minimum:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="5">
+       <widget class="ReadingDSpinBox" name="t2_edit">
+        <property name="minimumSize">
+         <size>
+          <width>100</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+        <property name="suffix">
+         <string>K</string>
+        </property>
+        <property name="decimals">
+         <number>1</number>
+        </property>
+        <property name="minimum">
+         <double>4.000000000000000</double>
+        </property>
+        <property name="maximum">
+         <double>300.000000000000000</double>
+        </property>
+        <property name="value">
+         <double>290.000000000000000</double>
         </property>
        </widget>
       </item>
@@ -157,6 +200,62 @@
         </property>
        </spacer>
       </item>
+      <item row="4" column="4">
+       <widget class="QLabel" name="gf1_label">
+        <property name="text">
+         <string>Gas flow:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="4">
+       <widget class="QLabel" name="t2_label">
+        <property name="text">
+         <string>Temperature setpoint:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="4">
+       <widget class="QLabel" name="r1_label">
+        <property name="text">
+         <string>Ramp speed:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0" colspan="7">
+       <spacer name="verticalSpacer">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeType">
+         <enum>QSizePolicy::Fixed</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>2</width>
+          <height>3</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="7" column="0" colspan="7">
+       <widget class="QLabel" name="alarm_label">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>25</height>
+         </size>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">color: red</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
+        </property>
+       </widget>
+      </item>
       <item row="6" column="4">
        <widget class="QLabel" name="h1_label">
         <property name="text">
@@ -168,16 +267,6 @@
        <widget class="QCheckBox" name="gf2_checkbox">
         <property name="text">
          <string>Automatic gas flow control</string>
-        </property>
-        <property name="checked">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="0" colspan="3">
-       <widget class="QCheckBox" name="r2_checkbox">
-        <property name="text">
-         <string>Temperature ramp</string>
         </property>
         <property name="checked">
          <bool>true</bool>
@@ -240,111 +329,15 @@
         </property>
        </widget>
       </item>
-      <item row="2" column="5">
-       <widget class="ReadingDSpinBox" name="t2_edit">
-        <property name="minimumSize">
-         <size>
-          <width>100</width>
-          <height>0</height>
-         </size>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-        <property name="suffix">
-         <string>K</string>
-        </property>
-        <property name="decimals">
-         <number>1</number>
-        </property>
-        <property name="minimum">
-         <double>4.000000000000000</double>
-        </property>
-        <property name="maximum">
-         <double>300.000000000000000</double>
-        </property>
-        <property name="value">
-         <double>290.000000000000000</double>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0">
-       <widget class="QLabel" name="t1_label">
-        <property name="maximumSize">
-         <size>
-          <width>90</width>
-          <height>16777215</height>
-         </size>
-        </property>
+      <item row="3" column="0" colspan="3">
+       <widget class="QCheckBox" name="r2_checkbox">
         <property name="text">
-         <string>Temperature:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="6" column="0" colspan="3">
-       <widget class="QCheckBox" name="h2_checkbox">
-        <property name="text">
-         <string>Automatic heater control</string>
+         <string>Temperature ramp</string>
         </property>
         <property name="checked">
          <bool>true</bool>
         </property>
        </widget>
-      </item>
-      <item row="2" column="1" colspan="2">
-       <widget class="QLabel" name="t1_reading">
-        <property name="minimumSize">
-         <size>
-          <width>60</width>
-          <height>0</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>-- K</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="3" rowspan="5">
-       <spacer name="horizontalSpacer_1">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeType">
-         <enum>QSizePolicy::Expanding</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>4</width>
-          <height>0</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item row="5" column="4">
-       <widget class="QLabel" name="gf3_label">
-        <property name="text">
-         <string>Gas flow minimum:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="7" column="0" colspan="7">
-       <spacer name="verticalSpacer_2">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-        <property name="sizeType">
-         <enum>QSizePolicy::Fixed</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>20</width>
-          <height>5</height>
-         </size>
-        </property>
-       </spacer>
       </item>
      </layout>
     </item>
