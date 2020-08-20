@@ -188,7 +188,7 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
             action = QtWidgets.QAction(nick)
             action.setData(nick)
             action.setCheckable(True)
-            action.setChecked(nick == self.feed.temperature.nick)
+            action.setChecked(nick == self.feed.temperature_module_nick)
             self.sensorMenu.addAction(action)
             self.sensorActionGroup.addAction(action)
             self.sensorActionGroup.triggered.connect(self.on_sensor_selected)

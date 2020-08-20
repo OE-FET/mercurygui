@@ -57,14 +57,9 @@ class MercuryFeed(QtCore.QObject):
 
     :func:`print_temperature` will then be executed with the emitted readings
     dictionary as argument every time a new signal is emitted.
-
-    :class:`MercuryFeed` will also handle maintaining the connection for you:: it will
-    periodically try to find the MercuryiTC if not connected, and emit warnings
-    when it looses an established connection.
     """
 
     new_readings_signal = QtCore.pyqtSignal(dict)
-    notify_signal = QtCore.pyqtSignal(str)
     connected_signal = QtCore.pyqtSignal(bool)
 
     def __init__(self, mercury, refresh=1):
@@ -74,37 +69,39 @@ class MercuryFeed(QtCore.QObject):
         self.mercury = mercury
         self.rm = mercury.rm
 
-        self.thread = None
-        self.worker = None
-
-        self.connected = False
-
         # get default modules to read from
         self._temp_nick = CONF.get('MercuryFeed', 'temperature_module')
+
+        # start worker in thread
+        self.thread = QtCore.QThread()
+        self.worker = DataCollectionWorker(self.refresh, self.mercury, self._temp_nick)
+        self.worker.moveToThread(self.thread)
+        self.worker.readings_signal.connect(self._get_data)
+        self.worker.connected_signal.connect(self.connected_signal.emit)
+
+        self.thread.started.connect(self.worker.run)
+        self.thread.start()
+
+        self.connected = False
 
     # BASE FUNCTIONALITY CODE
 
     def connect(self):
-        # connect to mercury
         if not self.mercury.connected:
             self.mercury.connect()
 
         if self.mercury.connected:
-            # start / resume worker
-            self.start_worker()
+            self.worker.running = True
             self.connected = True
             self.connected_signal.emit(True)
         else:
+            self.worker.running = False
             self.connected = False
 
     def disconnect(self):
-        # stop worker thread
-        if self.worker:
-            self.worker.running = False
-
-        # disconnect mercury
-        self.connected = False
         self.connected_signal.emit(False)
+        self.worker.running = False
+        self.connected = False
         self.mercury.disconnect()
 
     def exit_(self):
@@ -117,41 +114,30 @@ class MercuryFeed(QtCore.QObject):
         if self.mercury.connected:
             self.mercury.disconnect()
             self.connected_signal.emit(False)
+
         self.deleteLater()
-
-# CODE TO INTERACT WITH MERCURYITC
-
-    def start_worker(self):
-        """
-        Start a thread to periodically update readings.
-        """
-        if self.worker and self.thread:
-            self.worker.running = True
-        else:
-            # start data collection thread
-            self.thread = QtCore.QThread()
-            self.worker = DataCollectionWorker(self.refresh, self.mercury, self._temp_nick)
-            self.worker.moveToThread(self.thread)
-            self.worker.readings_signal.connect(self._get_data)
-            self.worker.connected_signal.connect(self.connected_signal.emit)
-            self.select_temp_sensor(self._temp_nick)
-            self.thread.started.connect(self.worker.run)
-            self.thread.start()
 
     @property
     def temperature_module_nick(self):
         return self._temp_nick
+
+    @property
+    def temperature(self):
+        return self.worker.temperature
+
+    @property
+    def heater(self):
+        return self.worker.heater
+
+    @property
+    def gasflow(self):
+        return self.worker.gasflow
 
     def select_temp_sensor(self, nick):
         """
         Updates module list after the new modules have been selected.
         """
         self.worker.select_temp_sensor(nick)
-
-        self.temperature = self.worker.temperature
-        self.heater = self.worker.heater
-        self.gasflow = self.worker.gasflow
-
         self._temp_nick = nick
         CONF.set('MercuryFeed', 'temperature_module', nick)
 
@@ -170,35 +156,36 @@ class DataCollectionWorker(QtCore.QObject):
 
     def __init__(self, refresh, mercury, temp_nick):
         QtCore.QObject.__init__(self)
+
         self.refresh = refresh
         self.mercury = mercury
         self.temp_nick = temp_nick
 
-        self.readings = {}
-        self.select_temp_sensor(self.temp_nick)
+        self.temperature = None
+        self.heater = None
+        self.gasflow = None
 
-        self.running = True
+        self.readings = {}
+
+        self.running = False
         self.terminate = False
 
     def run(self):
         while not self.terminate:
             if self.running:
                 try:
-                    # proceed with full update
+                    if not self.temperature:
+                        self.select_temp_sensor(self.temp_nick)
+
                     self.get_readings()
-                    # sleep until next scheduled refresh
                     QtCore.QThread.sleep(int(self.refresh))
                 except Exception:
-                    # emit signal if connection is lost
                     self.connected_signal.emit(False)
-                    # stop worker thread
                     self.running = False
-                    self.mercury.connected = False
                     logger.warning('Connection to MercuryiTC lost.')
+
             elif not self.running:
                 QtCore.QThread.msleep(int(self.refresh*1000))
-                if self.mercury.connected:
-                    self.running = True
 
     def get_readings(self):
 
