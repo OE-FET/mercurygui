@@ -501,6 +501,7 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
         if self.modulesDialog is None:
             self.modulesDialog = ModulesDialog(self.mercury)
         # show it
+        self.modulesDialog.update_gui()
         self.modulesDialog.open()
 
     @QtCore.pyqtSlot()
@@ -647,6 +648,9 @@ class ModulesDialog(QtWidgets.QDialog):
                                 'module_dialog.ui'), self)
 
         self.mercury = mercury
+        self.update_gui()
+
+    def update_gui(self):
 
         self.temp_modules = self._get_modules_for_type(MercuryITC_TEMP)
         self.htr_modules = self._get_modules_for_type(MercuryITC_HTR)
