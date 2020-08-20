@@ -105,6 +105,7 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
         self.r2_checkbox.clicked.connect(self.change_ramp_auto)
         self.gf1_edit.returnPressed.connect(self.change_flow)
         self.gf2_checkbox.clicked.connect(self.change_flow_auto)
+        self.gf3_edit.returnPressed.connect(self.change_flow_min)
         self.h1_edit.returnPressed.connect(self.change_heater)
         self.h2_checkbox.clicked.connect(self.change_heater_auto)
 
