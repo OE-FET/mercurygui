@@ -141,14 +141,19 @@ class MercuryFeed(QtCore.QObject):
     @property
     def temperature_module_nick(self):
         return self._temp_nick
+
+    def select_temp_sensor(self, nick):
         """
         Updates module list after the new modules have been selected.
         """
-        self.worker.select_temp_sensor(temp_nick)
+        self.worker.select_temp_sensor(nick)
 
         self.temperature = self.worker.temperature
         self.heater = self.worker.heater
         self.gasflow = self.worker.gasflow
+
+        self._temp_nick = nick
+        CONF.set('MercuryFeed', 'temperature_module', nick)
 
     def _get_data(self, readings_from_thread):
         self.readings = readings_from_thread
@@ -163,14 +168,14 @@ class DataCollectionWorker(QtCore.QObject):
     readings_signal = QtCore.pyqtSignal(object)
     connected_signal = QtCore.pyqtSignal(bool)
 
-    def __init__(self, refresh, mercury, temp_mod_number):
+    def __init__(self, refresh, mercury, temp_nick):
         QtCore.QObject.__init__(self)
         self.refresh = refresh
         self.mercury = mercury
-        self.temp_mod_number = temp_mod_number
+        self.temp_nick = temp_nick
 
         self.readings = {}
-        self.select_temp_sensor(self.temp_mod_number)
+        self.select_temp_sensor(self.temp_nick)
 
         self.running = True
         self.terminate = False
