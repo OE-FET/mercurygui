@@ -80,7 +80,7 @@ class MercuryFeed(QtCore.QObject):
         self.connected = False
 
         # get default modules to read from
-        self.temp_nick = CONF.get('MercuryFeed', 'temperature_module')
+        self._temp_nick = CONF.get('MercuryFeed', 'temperature_module')
 
     # BASE FUNCTIONALITY CODE
 
@@ -130,15 +130,17 @@ class MercuryFeed(QtCore.QObject):
         else:
             # start data collection thread
             self.thread = QtCore.QThread()
-            self.worker = DataCollectionWorker(self.refresh, self.mercury, self.temp_nick)
+            self.worker = DataCollectionWorker(self.refresh, self.mercury, self._temp_nick)
             self.worker.moveToThread(self.thread)
             self.worker.readings_signal.connect(self._get_data)
             self.worker.connected_signal.connect(self.connected_signal.emit)
-            self.select_temp_sensor(self.temp_nick)
+            self.select_temp_sensor(self._temp_nick)
             self.thread.started.connect(self.worker.run)
             self.thread.start()
 
-    def select_temp_sensor(self, temp_nick):
+    @property
+    def temperature_module_nick(self):
+        return self._temp_nick
         """
         Updates module list after the new modules have been selected.
         """
