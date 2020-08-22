@@ -1,9 +1,15 @@
 ### v2.1.0
 
+#### Added:
+
+- New menu "Assign modules" to assign gasflow and heater modules to a temperature sensor
+  from the GUI.
+- New control to set the minimum gas flow for automatic mode.
+- Display any alarms for a temperature sensor and its associated modules in the GUI.
+
 #### Changed:
 
 - Select the current temperature sensor from a menu instead of a dialog.
-- Allow assigning gasflow and heater modules to a temperature sensor from the GUI.
 - Clear the plot when switching sensors.
 
 ### v2.0.0
