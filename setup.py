@@ -2,8 +2,8 @@ from setuptools import setup, find_packages
 
 setup(
     name='mercurygui',
-    version='2.1.0',
-    description='',
+    version='2.1.1',
+    description='A GUI to control the Oxford instruments Mercury iTC',
     author='Sam Schott',
     author_email='ss2151@cam.ac.uk',
     url='https://github.com/oe-fet/mercurygui.git',

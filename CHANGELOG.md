@@ -1,3 +1,9 @@
+### v2.1.1
+
+#### Fixed:
+
+- Fixed missing submodule in PyPI release.
+
 ### v2.1.0
 
 #### Added:
