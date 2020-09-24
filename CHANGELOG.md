@@ -1,3 +1,9 @@
+### v2.1.2
+
+#### Fixed:
+
+- Fixed connecting to MercuryiTC without a default temperature module.
+
 ### v2.1.1
 
 #### Fixed:
