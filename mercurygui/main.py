@@ -25,7 +25,7 @@ from mercurygui.pyqt_labutils import LedIndicator, ConnectionDialog
 from mercurygui.pyqtplot_canvas import TemperatureHistoryPlot
 from mercurygui.config.main import CONF
 
-MAIN_UI_PATH = pkgr.resource_filename('mercurygui', 'main.ui')
+MAIN_UI_PATH = pkgr.resource_filename("mercurygui", "main.ui")
 
 logger = logging.getLogger(__name__)
 
@@ -35,8 +35,8 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
 
     QUIT_ON_CLOSE = True
 
-    MAX_DISPLAY = 24*60*60
-    TITLE_TEMPLATE = 'MercuryiTC Control'
+    MAX_DISPLAY = 24 * 60 * 60
+    TITLE_TEMPLATE = "MercuryiTC Control"
 
     def __init__(self, mercury):
         super(self.__class__, self).__init__()
@@ -48,8 +48,8 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
         # sent Title font size relative to the system's default size
         scaling = 1.5
         font = self.labelTitle.font()
-        defaultFontSize = QtWidgets.QLabel('test').font().pointSize()
-        fontSize = round(defaultFontSize*scaling, 1)
+        defaultFontSize = QtWidgets.QLabel("test").font().pointSize()
+        fontSize = round(defaultFontSize * scaling, 1)
         font.setPointSize(fontSize)
         self.labelTitle.setFont(font)
 
@@ -69,15 +69,15 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
         w = self.canvas.y_axis_width
         self.gridLayoutTop.setContentsMargins(w, 0, w, 0)
         self.gridLayoutBottom.setContentsMargins(w, 0, w, 0)
-        self.horizontalSlider.setMaximum(self.MAX_DISPLAY/60)
+        self.horizontalSlider.setMaximum(self.MAX_DISPLAY / 60)
 
         # connect slider to plot
         self.horizontalSlider.valueChanged.connect(self.on_slider_changed)
 
         # adapt text edit colors to graph colors
-        self.t1_reading.setStyleSheet('color:rgb%s' % str(self.canvas.GREEN))
-        self.gf1_edit.setStyleSheet('color:rgb%s' % str(self.canvas.BLUE))
-        self.h1_edit.setStyleSheet('color:rgb%s' % str(self.canvas.RED))
+        self.t1_reading.setStyleSheet("color:rgb%s" % str(self.canvas.GREEN))
+        self.gf1_edit.setStyleSheet("color:rgb%s" % str(self.canvas.BLUE))
+        self.h1_edit.setStyleSheet("color:rgb%s" % str(self.canvas.RED))
         self.gf1_edit.setMinimalStep(0.1)
         self.h1_edit.setMinimalStep(0.1)
 
@@ -127,8 +127,9 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
         self.h2_checkbox.setEnabled(False)
 
         # check if mercury is connected, connect slots
-        self.display_message('Looking for temperature controller at %s...' %
-                             self.mercury.visa_address)
+        self.display_message(
+            "Looking for temperature controller at %s..." % self.mercury.visa_address
+        )
         self.update_gui_connection(self.feed.connected)
 
         # start (stop) updates of GUI when mercury is connected (disconnected)
@@ -144,22 +145,22 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
 
         self.feed.connect()
 
-# =================== BASIC UI SETUP ==========================================
+    # =================== BASIC UI SETUP ==========================================
 
     def restore_geometry(self):
-        x = CONF.get('Window', 'x')
-        y = CONF.get('Window', 'y')
-        w = CONF.get('Window', 'width')
-        h = CONF.get('Window', 'height')
+        x = CONF.get("Window", "x")
+        y = CONF.get("Window", "y")
+        w = CONF.get("Window", "width")
+        h = CONF.get("Window", "height")
 
         self.setGeometry(x, y, w, h)
 
     def save_geometry(self):
         geo = self.geometry()
-        CONF.set('Window', 'height', geo.height())
-        CONF.set('Window', 'width', geo.width())
-        CONF.set('Window', 'x', geo.x())
-        CONF.set('Window', 'y', geo.y())
+        CONF.set("Window", "height", geo.height())
+        CONF.set("Window", "width", geo.width())
+        CONF.set("Window", "x", geo.x())
+        CONF.set("Window", "y", geo.y())
 
     def exit_(self):
         self.feed.exit_()
@@ -176,7 +177,7 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
         # determine first plotted data point
         sv = self.horizontalSlider.value()
 
-        self.timeLabel.setText('Show last %s min' % sv)
+        self.timeLabel.setText("Show last %s min" % sv)
         self.canvas.set_xmin(-sv)
         self.canvas.p0.setXRange(-sv, 0)
         self.canvas.p0.enableAutoRange(x=False, y=True)
@@ -200,7 +201,7 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
     def update_gui_connection(self, connected):
 
         if connected:
-            self.display_message('Connection established.')
+            self.display_message("Connection established.")
             self.led.setChecked(True)
 
             # enable / disable menu bar items
@@ -221,8 +222,8 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
             self.h2_checkbox.setEnabled(True)
 
         elif not connected:
-            self.display_error('Connection lost.')
-            logger.info('Connection to MercuryiTC lost.')
+            self.display_error("Connection lost.")
+            logger.info("Connection to MercuryiTC lost.")
             self.led.setChecked(False)
 
             # enable / disable menu bar items
@@ -244,10 +245,10 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
         self.build_sensor_menu()
 
     def display_message(self, text):
-        self.statusbar.showMessage('%s' % text, 5000)
+        self.statusbar.showMessage("%s" % text, 5000)
 
     def display_error(self, text):
-        self.statusbar.showMessage('%s' % text)
+        self.statusbar.showMessage("%s" % text)
 
     @QtCore.pyqtSlot(object)
     def update_controls(self, readings):
@@ -255,14 +256,16 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
         Parses readings for the MercuryMonitorApp and updates UI accordingly
         """
 
-        self.labelTitle.setText(self.TITLE_TEMPLATE + ': ' + self.feed.temperature_module_nick)
+        self.labelTitle.setText(
+            self.TITLE_TEMPLATE + ": " + self.feed.temperature_module_nick
+        )
 
         # heater signals
-        self.h1_label.setText('Heater, %s V:' % readings['HeaterVolt'])
-        self.h1_edit.updateValue(readings['HeaterPercent'])
+        self.h1_label.setText("Heater, %s V:" % readings["HeaterVolt"])
+        self.h1_edit.updateValue(readings["HeaterPercent"])
 
         if self.feed.heater:
-            is_heater_auto = readings['HeaterAuto'] == 'ON'
+            is_heater_auto = readings["HeaterAuto"] == "ON"
             self.h1_edit.setReadOnly(is_heater_auto)
             self.h1_edit.setEnabled(not is_heater_auto)
             self.h2_checkbox.setChecked(is_heater_auto)
@@ -273,11 +276,11 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
             self.h2_checkbox.setEnabled(False)
 
         # gas flow signals
-        self.gf1_edit.updateValue(readings['FlowPercent'])
-        self.gf3_edit.updateValue(readings['FlowMin'])
+        self.gf1_edit.updateValue(readings["FlowPercent"])
+        self.gf3_edit.updateValue(readings["FlowMin"])
 
         if self.feed.gasflow:
-            is_gf_auto = readings['FlowAuto'] == 'ON'
+            is_gf_auto = readings["FlowAuto"] == "ON"
             self.gf1_edit.setReadOnly(is_gf_auto)
             self.gf1_edit.setEnabled(not is_gf_auto)
             self.gf2_checkbox.setChecked(is_gf_auto)
@@ -289,17 +292,17 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
             self.gf3_edit.setEnabled(False)
 
         # temperature signals
-        self.t1_reading.setText('%s K' % round(readings['Temp'], 3))
-        self.t2_edit.updateValue(readings['TempSetpoint'])
-        self.r1_edit.updateValue(readings['TempRamp'])
+        self.t1_reading.setText("%s K" % round(readings["Temp"], 3))
+        self.t2_edit.updateValue(readings["TempSetpoint"])
+        self.r1_edit.updateValue(readings["TempRamp"])
 
-        is_ramp_enable = readings['TempRampEnable'] == 'ON'
+        is_ramp_enable = readings["TempRampEnable"] == "ON"
         self.r2_checkbox.setChecked(is_ramp_enable)
 
         # alarms
-        alarm_str = ''
-        for k, v in readings['Alarms'].items():
-            alarm_str += '{}: {} '.format(k, v)
+        alarm_str = ""
+        for k, v in readings["Alarms"].items():
+            alarm_str += "{}: {} ".format(k, v)
 
         self.alarm_label.setText(alarm_str)
 
@@ -312,22 +315,23 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
     def update_plot(self, readings):
         # append data for plotting
         self.xdata = np.append(self.xdata, time.time())
-        self.ydata_tmpr = np.append(self.ydata_tmpr, readings['Temp'])
-        self.ydata_gflw = np.append(self.ydata_gflw, readings['FlowPercent'] / 100)
-        self.ydata_htr = np.append(self.ydata_htr, readings['HeaterPercent'] / 100)
+        self.ydata_tmpr = np.append(self.ydata_tmpr, readings["Temp"])
+        self.ydata_gflw = np.append(self.ydata_gflw, readings["FlowPercent"] / 100)
+        self.ydata_htr = np.append(self.ydata_htr, readings["HeaterPercent"] / 100)
 
         # prevent data vector from exceeding MAX_DISPLAY
-        self.xdata = self.xdata[-self.MAX_DISPLAY:]
-        self.ydata_tmpr = self.ydata_tmpr[-self.MAX_DISPLAY:]
-        self.ydata_gflw = self.ydata_gflw[-self.MAX_DISPLAY:]
-        self.ydata_htr = self.ydata_htr[-self.MAX_DISPLAY:]
+        self.xdata = self.xdata[-self.MAX_DISPLAY :]
+        self.ydata_tmpr = self.ydata_tmpr[-self.MAX_DISPLAY :]
+        self.ydata_gflw = self.ydata_gflw[-self.MAX_DISPLAY :]
+        self.ydata_htr = self.ydata_htr[-self.MAX_DISPLAY :]
 
         # convert xData to minutes and set current time to t = 0
         self.xdata_min_zero = (self.xdata - self.xdata[-1]) / 60
 
         # update plot
-        self.canvas.update_data(self.xdata_min_zero, self.ydata_tmpr,
-                                self.ydata_gflw, self.ydata_htr)
+        self.canvas.update_data(
+            self.xdata_min_zero, self.ydata_tmpr, self.ydata_gflw, self.ydata_htr
+        )
 
     def clear_plot(self):
         # append data for plotting
@@ -338,10 +342,11 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
         self.ydata_htr = np.array([])
 
         # update plot
-        self.canvas.update_data(self.xdata, self.ydata_tmpr,
-                                self.ydata_gflw, self.ydata_htr)
+        self.canvas.update_data(
+            self.xdata, self.ydata_tmpr, self.ydata_gflw, self.ydata_htr
+        )
 
-# =================== LOGGING DATA ============================================
+    # =================== LOGGING DATA ============================================
 
     def setup_logging(self):
         """
@@ -350,15 +355,17 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
         after every 10 min.
         """
         # find user home directory
-        home_path = os.path.expanduser('~')
-        self.logging_path = os.path.join(home_path, '.mercurygui', 'LOG_FILES')
+        home_path = os.path.expanduser("~")
+        self.logging_path = os.path.join(home_path, ".mercurygui", "LOG_FILES")
 
         # create folder '~/.CustomXepr/LOG_FILES' if not present
         if not os.path.exists(self.logging_path):
             os.makedirs(self.logging_path)
         # set logging file path
-        self.log_file = os.path.join(self.logging_path, 'temperature_log ' +
-                                     time.strftime("%Y-%m-%d_%H-%M-%S") + '.txt')
+        self.log_file = os.path.join(
+            self.logging_path,
+            "temperature_log " + time.strftime("%Y-%m-%d_%H-%M-%S") + ".txt",
+        )
 
         # delete old log files
         now = time.time()
@@ -366,14 +373,14 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
 
         for f in os.listdir(self.logging_path):
             f = os.path.join(self.logging_path, f)
-            if os.stat(f).st_mtime < now - days_to_keep*24*60*60:
+            if os.stat(f).st_mtime < now - days_to_keep * 24 * 60 * 60:
                 if os.path.isfile(f):
                     os.remove(f)
 
         # set up periodic logging
         t_save = 10  # time interval to save temperature data (min)
         self.save_timer = QtCore.QTimer()
-        self.save_timer.setInterval(t_save*60*1000)
+        self.save_timer.setInterval(t_save * 60 * 1000)
         self.save_timer.setSingleShot(False)  # set to reoccur
         self.save_timer.timeout.connect(self.log_temperature_data)
         self.save_timer.start()
@@ -381,100 +388,108 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
     def save_temperature_data(self, path=None):
         # prompt user for file path if not given
         if path is None:
-            text = 'Select path for temperature data file:'
+            text = "Select path for temperature data file:"
             path = QtWidgets.QFileDialog.getSaveFileName(caption=text)
             path = path[0]
 
-        if not path.endswith('.txt'):
-            path += '.txt'
+        if not path.endswith(".txt"):
+            path += ".txt"
 
-        title = 'temperature trace, saved on ' + time.strftime('%d/%m/%Y') + '\n'
+        title = "temperature trace, saved on " + time.strftime("%d/%m/%Y") + "\n"
 
-        header = '\t'.join(['Time (sec)', 'Temperature (K)',
-                            'Heater (%)', 'Gas flow (%)'])
+        header = "\t".join(
+            ["Time (sec)", "Temperature (K)", "Heater (%)", "Gas flow (%)"]
+        )
 
-        data_matrix = np.concatenate((self.xdata[:, np.newaxis],
-                                      self.ydata_tmpr[:, np.newaxis],
-                                      self.ydata_htr[:, np.newaxis],
-                                      self.ydata_gflw[:, np.newaxis]), axis=1)
+        data_matrix = np.concatenate(
+            (
+                self.xdata[:, np.newaxis],
+                self.ydata_tmpr[:, np.newaxis],
+                self.ydata_htr[:, np.newaxis],
+                self.ydata_gflw[:, np.newaxis],
+            ),
+            axis=1,
+        )
 
         # noinspection PyTypeChecker
-        np.savetxt(path, data_matrix, delimiter='\t', header=title + header, fmt='%f')
+        np.savetxt(path, data_matrix, delimiter="\t", header=title + header, fmt="%f")
 
     def log_temperature_data(self):
         # save temperature data to log file
         if self.feed.connected:
             self.save_temperature_data(self.log_file)
 
-# =================== CALLBACKS FOR SETTING CHANGES ===========================
+    # =================== CALLBACKS FOR SETTING CHANGES ===========================
 
     @QtCore.pyqtSlot()
     def change_t_setpoint(self):
         new_t = self.t2_edit.value()
 
         if 3.5 < new_t < 300:
-            self.display_message('T_setpoint = %s K' % new_t)
+            self.display_message("T_setpoint = %s K" % new_t)
             self.feed.temperature.loop_tset = new_t
         else:
-            self.display_error('Error: Only temperature setpoints between ' +
-                               '3.5 K and 300 K allowed.')
+            self.display_error(
+                "Error: Only temperature setpoints between "
+                + "3.5 K and 300 K allowed."
+            )
 
     @QtCore.pyqtSlot()
     def change_ramp(self):
         self.feed.temperature.loop_rset = self.r1_edit.value()
-        self.display_message('Ramp = %s K/min' % self.r1_edit.value())
+        self.display_message("Ramp = %s K/min" % self.r1_edit.value())
 
     @QtCore.pyqtSlot(bool)
     def change_ramp_auto(self, checked):
         if checked:
-            self.feed.temperature.loop_rena = 'ON'
-            self.display_message('Ramp is turned ON')
+            self.feed.temperature.loop_rena = "ON"
+            self.display_message("Ramp is turned ON")
         else:
-            self.feed.temperature.loop_rena = 'OFF'
-            self.display_message('Ramp is turned OFF')
+            self.feed.temperature.loop_rena = "OFF"
+            self.display_message("Ramp is turned OFF")
 
     @QtCore.pyqtSlot()
     def change_flow(self):
         self.feed.temperature.loop_fset = self.gf1_edit.value()
-        self.display_message('Gas flow = %s%%' % self.gf1_edit.value())
+        self.display_message("Gas flow = %s%%" % self.gf1_edit.value())
 
     @QtCore.pyqtSlot()
     def change_flow_min(self):
         self.feed.gasflow.gmin = self.gf3_edit.value()
-        self.display_message('Gas flow min = %s%%' % self.gf3_edit.value())
+        self.display_message("Gas flow min = %s%%" % self.gf3_edit.value())
 
     @QtCore.pyqtSlot(bool)
     def change_flow_auto(self, checked):
         if checked:
-            self.feed.temperature.loop_faut = 'ON'
-            self.display_message('Gas flow is automatically controlled.')
+            self.feed.temperature.loop_faut = "ON"
+            self.display_message("Gas flow is automatically controlled.")
             self.gf1_edit.setReadOnly(True)
             self.gf1_edit.setEnabled(False)
         else:
-            self.feed.temperature.loop_faut = 'OFF'
-            self.display_message('Gas flow is manually controlled.')
+            self.feed.temperature.loop_faut = "OFF"
+            self.display_message("Gas flow is manually controlled.")
             self.gf1_edit.setReadOnly(False)
             self.gf1_edit.setEnabled(True)
 
     @QtCore.pyqtSlot()
     def change_heater(self):
         self.feed.temperature.loop_hset = self.h1_edit.value()
-        self.display_message('Heater power  = %s%%' % self.h1_edit.value())
+        self.display_message("Heater power  = %s%%" % self.h1_edit.value())
 
     @QtCore.pyqtSlot(bool)
     def change_heater_auto(self, checked):
         if checked:
-            self.feed.temperature.loop_enab = 'ON'
-            self.display_message('Heater is automatically controlled.')
+            self.feed.temperature.loop_enab = "ON"
+            self.display_message("Heater is automatically controlled.")
             self.h1_edit.setReadOnly(True)
             self.h1_edit.setEnabled(False)
         else:
-            self.feed.temperature.loop_enab = 'OFF'
-            self.display_message('Heater is manually controlled.')
+            self.feed.temperature.loop_enab = "OFF"
+            self.display_message("Heater is manually controlled.")
             self.h1_edit.setReadOnly(False)
             self.h1_edit.setEnabled(True)
 
-# ========================== CALLBACKS FOR MENU BAR ===========================
+    # ========================== CALLBACKS FOR MENU BAR ===========================
 
     def on_sensor_selected(self, action):
 
@@ -511,12 +526,12 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
         Opens directory with log files with current log file selected.
         """
 
-        if platform.system() == 'Windows':
+        if platform.system() == "Windows":
             os.startfile(self.logging_path)
-        elif platform.system() == 'Darwin':
-            subprocess.Popen(['open', self.logging_path])
+        elif platform.system() == "Darwin":
+            subprocess.Popen(["open", self.logging_path])
         else:
-            subprocess.Popen(['xdg-open', self.logging_path])
+            subprocess.Popen(["xdg-open", self.logging_path])
 
     def _get_nicks(self, sensor_type):
         if self.feed.connected:
@@ -528,8 +543,7 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
 # noinspection PyUnresolvedReferences
 class ReadingsTab(QtWidgets.QWidget):
 
-    EXCEPT = ['read', 'write', 'query', 'CAL_INT', 'EXCT_TYPES',
-              'TYPES', 'clear_cache']
+    EXCEPT = ["read", "write", "query", "CAL_INT", "EXCT_TYPES", "TYPES", "clear_cache"]
 
     def __init__(self, mercury, module):
         super(self.__class__, self).__init__()
@@ -542,21 +556,21 @@ class ReadingsTab(QtWidgets.QWidget):
 
         self.gridLayout = QtWidgets.QGridLayout(self)
         self.gridLayout.setContentsMargins(0, 0, 0, 0)
-        self.gridLayout.setObjectName('gridLayout_%s' % self.name)
+        self.gridLayout.setObjectName("gridLayout_%s" % self.name)
 
         self.label = QtWidgets.QLabel(self)
-        self.label.setObjectName('label_%s' % self.name)
+        self.label.setObjectName("label_%s" % self.name)
         self.gridLayout.addWidget(self.label, 0, 0, 1, 2)
 
         self.comboBox = QtWidgets.QComboBox(self)
-        self.comboBox.setObjectName('comboBox_%s' % self.name)
+        self.comboBox.setObjectName("comboBox_%s" % self.name)
         self.gridLayout.addWidget(self.comboBox, 1, 0, 1, 1)
 
         self.lineEdit = QtWidgets.QLineEdit(self)
-        self.lineEdit.setObjectName('lineEdit_%s' % self.name)
+        self.lineEdit.setObjectName("lineEdit_%s" % self.name)
         self.gridLayout.addWidget(self.lineEdit, 1, 1, 1, 1)
 
-        readings = [x for x in self.attr if not (x.startswith('_') or x in self.EXCEPT)]
+        readings = [x for x in self.attr if not (x.startswith("_") or x in self.EXCEPT)]
         self.comboBox.addItems(readings)
 
         self.comboBox.currentIndexChanged.connect(self.get_reading)
@@ -570,7 +584,7 @@ class ReadingsTab(QtWidgets.QWidget):
 
         reading = getattr(self.module, self.comboBox.currentText())
         if isinstance(reading, tuple):
-            reading = ''.join(map(str, reading))
+            reading = "".join(map(str, reading))
         reading = str(reading)
         self.lineEdit.setText(reading)
 
@@ -581,16 +595,15 @@ class ReadingsTab(QtWidgets.QWidget):
         try:
             alarm = self.mercury.alarms[self.module.uid]
         except KeyError:
-            alarm = '--'
+            alarm = "--"
 
-        self.label.setText('Alarms: %s' % alarm)
+        self.label.setText("Alarms: %s" % alarm)
 
 
 class ReadingsOverview(QtWidgets.QDialog):
-
     def __init__(self, mercury, parent=None):
         super(self.__class__, self).__init__(parent=parent)
-        self.setWindowTitle('Readings Overview')
+        self.setWindowTitle("Readings Overview")
         self.mercury = mercury
         self.setupUi(self)
 
@@ -600,14 +613,14 @@ class ReadingsOverview(QtWidgets.QDialog):
         self.timer.start(3000)
 
     def setupUi(self, Form):
-        Form.setObjectName('Mercury ITC Readings Overview')
+        Form.setObjectName("Mercury ITC Readings Overview")
         Form.resize(500, 142)
         self.masterGrid = QtWidgets.QGridLayout(Form)
-        self.masterGrid.setObjectName('gridLayout')
+        self.masterGrid.setObjectName("gridLayout")
 
         # create main tab widget
         self.tabWidget = QtWidgets.QTabWidget(Form)
-        self.tabWidget.setObjectName('tabWidget')
+        self.tabWidget.setObjectName("tabWidget")
 
         # create a tab with combobox and text box for each module
         self.readings_tabs = []
@@ -633,7 +646,7 @@ class ReadingsOverview(QtWidgets.QDialog):
 
 
 class _NoModule:
-    nick = 'None'
+    nick = "None"
 
 
 class ModulesDialog(QtWidgets.QDialog):
@@ -645,8 +658,12 @@ class ModulesDialog(QtWidgets.QDialog):
 
     def __init__(self, mercury, parent=None):
         super(self.__class__, self).__init__(parent=parent)
-        uic.loadUi(os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                                'module_dialog.ui'), self)
+        uic.loadUi(
+            os.path.join(
+                os.path.dirname(os.path.realpath(__file__)), "module_dialog.ui"
+            ),
+            self,
+        )
 
         self.mercury = mercury
         self.update_gui()
@@ -689,9 +706,9 @@ class ModulesDialog(QtWidgets.QDialog):
         for module in self.temp_modules:
             if module is not self.temp_modules[temp_index]:
                 if module.loop_htr == htr_nick:
-                    module.loop_htr = 'None'
+                    module.loop_htr = "None"
                 if module.loop_aux == aux_nick:
-                    module.loop_aux = 'None'
+                    module.loop_aux = "None"
 
         # assign heater and gasflow modules to selected loop
         self.temp_modules[temp_index].loop_htr = htr_nick
@@ -709,8 +726,8 @@ def run():
 
     app = QtWidgets.QApplication(sys.argv)
 
-    mercury_address = CONF.get('Connection', 'VISA_ADDRESS')
-    visa_library = CONF.get('Connection', 'VISA_LIBRARY')
+    mercury_address = CONF.get("Connection", "VISA_ADDRESS")
+    visa_library = CONF.get("Connection", "VISA_LIBRARY")
 
     mercury = MercuryITC(mercury_address, visa_library, open_timeout=1)
 
@@ -720,5 +737,5 @@ def run():
     app.exec_()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     run()

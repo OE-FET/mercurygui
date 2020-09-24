@@ -141,7 +141,7 @@ class MercuryFeed(QtCore.QObject):
         self.new_readings_signal.emit(self.readings)
 
     def __repr__(self):
-        return '<{}({})>'.format(self.__class__.__name__, self.mercury)
+        return "<{}({})>".format(self.__class__.__name__, self.mercury)
 
 
 class DataCollectionWorker(QtCore.QObject):
@@ -177,10 +177,10 @@ class DataCollectionWorker(QtCore.QObject):
                 except Exception:
                     self.connected_signal.emit(False)
                     self.running = False
-                    logger.warning('Connection to MercuryiTC lost.')
+                    logger.warning("Connection to MercuryiTC lost.")
 
             elif not self.running:
-                QtCore.QThread.msleep(int(self.refresh*1000))
+                QtCore.QThread.msleep(int(self.refresh * 1000))
 
     def get_readings(self):
 
@@ -188,36 +188,42 @@ class DataCollectionWorker(QtCore.QObject):
         htr_nick = self.temperature.loop_htr
         aux_nick = self.temperature.loop_aux
 
-        self.heater = next((m for m in self.mercury.modules if m.nick == htr_nick), None)
-        self.gasflow = next((m for m in self.mercury.modules if m.nick == aux_nick), None)
+        self.heater = next(
+            (m for m in self.mercury.modules if m.nick == htr_nick), None
+        )
+        self.gasflow = next(
+            (m for m in self.mercury.modules if m.nick == aux_nick), None
+        )
 
         # read temperature data
-        self.readings['Temp'] = self.temperature.temp[0]
-        self.readings['TempSetpoint'] = self.temperature.loop_tset
-        self.readings['TempRamp'] = self.temperature.loop_rset
-        self.readings['TempRampEnable'] = self.temperature.loop_rena
+        self.readings["Temp"] = self.temperature.temp[0]
+        self.readings["TempSetpoint"] = self.temperature.loop_tset
+        self.readings["TempRamp"] = self.temperature.loop_rset
+        self.readings["TempRampEnable"] = self.temperature.loop_rena
 
         # read heater data
         if self.heater:  # if heater is configured for temperature sensor
-            self.readings['HeaterVolt'] = self.heater.volt[0]
-            self.readings['HeaterAuto'] = self.temperature.loop_enab
-            self.readings['HeaterPercent'] = self.temperature.loop_hset
+            self.readings["HeaterVolt"] = self.heater.volt[0]
+            self.readings["HeaterAuto"] = self.temperature.loop_enab
+            self.readings["HeaterPercent"] = self.temperature.loop_hset
         else:  # if no heater is configured
-            self.readings['HeaterVolt'] = float('nan')
-            self.readings['HeaterAuto'] = 'OFF'
-            self.readings['HeaterPercent'] = 0  # 'NaN' values are not accepted by spinbox
+            self.readings["HeaterVolt"] = float("nan")
+            self.readings["HeaterAuto"] = "OFF"
+            self.readings[
+                "HeaterPercent"
+            ] = 0  # 'NaN' values are not accepted by spinbox
 
-        # read gas flow data
+        # read gas flow datatemperature_module
         if self.gasflow:  # if aux module is configured for temperature sensor
-            self.readings['FlowAuto'] = self.temperature.loop_faut
-            self.readings['FlowPercent'] = self.gasflow.perc[0]
-            self.readings['FlowMin'] = self.gasflow.gmin
-            self.readings['FlowSetpoint'] = self.temperature.loop_fset
+            self.readings["FlowAuto"] = self.temperature.loop_faut
+            self.readings["FlowPercent"] = self.gasflow.perc[0]
+            self.readings["FlowMin"] = self.gasflow.gmin
+            self.readings["FlowSetpoint"] = self.temperature.loop_fset
         else:  # if no aux module is configured
-            self.readings['FlowAuto'] = 'OFF'
-            self.readings['FlowPercent'] = 0  # 'NaN' values are not accepted by spinbox
-            self.readings['FlowMin'] = float('nan')
-            self.readings['FlowSetpoint'] = float('nan')
+            self.readings["FlowAuto"] = "OFF"
+            self.readings["FlowPercent"] = 0  # 'NaN' values are not accepted by spinbox
+            self.readings["FlowMin"] = float("nan")
+            self.readings["FlowSetpoint"] = float("nan")
 
         # read alarms
         alarms = self.mercury.alarms
@@ -228,7 +234,7 @@ class DataCollectionWorker(QtCore.QObject):
             if key not in uids:
                 del alarms[key]
 
-        self.readings['Alarms'] = alarms
+        self.readings["Alarms"] = alarms
 
         self.readings_signal.emit(self.readings)
 
@@ -260,13 +266,13 @@ class DataCollectionWorker(QtCore.QObject):
         CONF.set("MercuryFeed", "temperature_module", self.temp_nick)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
     from mercuryitc import MercuryITC
 
     app = QtWidgets.QApplication(sys.argv)
 
-    address = CONF.get('Connection', 'VISA_ADDRESS')
+    address = CONF.get("Connection", "VISA_ADDRESS")
     mercury_instance = MercuryITC(address)
     feed = MercuryFeed(mercury_instance)
 
