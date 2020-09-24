@@ -69,12 +69,9 @@ class MercuryFeed(QtCore.QObject):
         self.mercury = mercury
         self.rm = mercury.rm
 
-        # get default modules to read from
-        self._temp_nick = CONF.get('MercuryFeed', 'temperature_module')
-
         # start worker in thread
         self.thread = QtCore.QThread()
-        self.worker = DataCollectionWorker(self.refresh, self.mercury, self._temp_nick)
+        self.worker = DataCollectionWorker(self.refresh, self.mercury)
         self.worker.moveToThread(self.thread)
         self.worker.readings_signal.connect(self._get_data)
         self.worker.connected_signal.connect(self.connected_signal.emit)
@@ -119,7 +116,7 @@ class MercuryFeed(QtCore.QObject):
 
     @property
     def temperature_module_nick(self):
-        return self._temp_nick
+        return self.worker.temp_nick
 
     @property
     def temperature(self):
@@ -138,8 +135,6 @@ class MercuryFeed(QtCore.QObject):
         Updates module list after the new modules have been selected.
         """
         self.worker.select_temp_sensor(nick)
-        self._temp_nick = nick
-        CONF.set('MercuryFeed', 'temperature_module', nick)
 
     def _get_data(self, readings_from_thread):
         self.readings = readings_from_thread
@@ -154,12 +149,12 @@ class DataCollectionWorker(QtCore.QObject):
     readings_signal = QtCore.pyqtSignal(object)
     connected_signal = QtCore.pyqtSignal(bool)
 
-    def __init__(self, refresh, mercury, temp_nick):
+    def __init__(self, refresh, mercury):
         QtCore.QObject.__init__(self)
 
         self.refresh = refresh
         self.mercury = mercury
-        self.temp_nick = temp_nick
+        self.temp_nick = CONF.get("MercuryFeed", "temperature_module")
 
         self.temperature = None
         self.heater = None
@@ -242,13 +237,27 @@ class DataCollectionWorker(QtCore.QObject):
         Updates module list after the new modules have been selected.
         """
         # find all temperature modules
-        matches = (m for m in self.mercury.modules if m.nick == temp_nick and type(m) is MercuryITC_TEMP)
-        match = next(matches, None)
+        tmp_modules = list(
+            m for m in self.mercury.modules if type(m) is MercuryITC_TEMP
+        )
+
+        # find match for given nick
+        match = next((m for m in tmp_modules if m.nick == temp_nick), None)
 
         if match:
             self.temperature = match
+        elif tmp_modules:
+            print(
+                'Temperature sensor "{}" not found, choosing first module'.format(
+                    temp_nick
+                )
+            )
+            self.temperature = tmp_modules[0]
+            self.temp_nick = tmp_modules[0].nick
         else:
-            raise IOError('Temperature sensor "{}" not found'.format(temp_nick))
+            raise RuntimeError("No temperature modules found")
+
+        CONF.set("MercuryFeed", "temperature_module", self.temp_nick)
 
 
 if __name__ == '__main__':
