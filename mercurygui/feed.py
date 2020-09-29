@@ -252,6 +252,7 @@ class DataCollectionWorker(QtCore.QObject):
 
         if match:
             self.temperature = match
+            self.temp_nick = temp_nick
         elif tmp_modules:
             print(
                 'Temperature sensor "{}" not found, choosing first module'.format(
