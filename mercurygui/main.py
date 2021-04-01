@@ -127,6 +127,7 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
         if connected is not self._cached_connection_status:
             # update gui to reflect changed connection status
             self.build_tabs()
+            self.readingsDialog.build_tabs()
             self.update_gui_connection(connected)
             for panel in self.panels.values():
                 panel.update_gui_connection(connected)
@@ -191,7 +192,6 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
 
     @QtCore.pyqtSlot()
     def on_readings_clicked(self):
-        self.readingsDialog.update_gui()
         self.readingsDialog.show()
 
     @QtCore.pyqtSlot()
@@ -628,15 +628,18 @@ class ReadingsOverview(QtWidgets.QWidget):
         self.tabWidget = QtWidgets.QTabWidget(self)
         self.masterGrid.addWidget(self.tabWidget, 0, 0, 1, 1)
 
+        self.build_tabs()
+
         # refresh readings every 3 sec
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.get_readings)
         self.timer.start(3000)
 
-    def update_gui(self):
+    def build_tabs(self):
 
         # create a tab with combobox and text box for each module
         self.readings_tabs = []
+        self.tabWidget.clear()
 
         for module in getattr(self.mercury, "modules", []):
             new_tab = ReadingsTab(self.mercury, module)
