@@ -1,3 +1,10 @@
+### v3.0.0
+
+#### Changed:
+
+- All temperature sensors are now shown as tabs in the GUI.
+- Connection and disconnection is now handled automatically.
+
 ### v2.1.2
 
 #### Fixed:
