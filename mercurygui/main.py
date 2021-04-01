@@ -126,6 +126,7 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
 
         if connected is not self._cached_connection_status:
             # update gui to reflect changed connection status
+            self.build_tabs()
             self.update_gui_connection(connected)
             for panel in self.panels.values():
                 panel.update_gui_connection(connected)
@@ -613,12 +614,19 @@ class ReadingsTab(QtWidgets.QWidget):
         self.label.setText("Alarms: %s" % alarm)
 
 
-class ReadingsOverview(QtWidgets.QDialog):
+class ReadingsOverview(QtWidgets.QWidget):
     def __init__(self, mercury, parent=None):
         super(self.__class__, self).__init__(parent=parent)
         self.setWindowTitle("Readings Overview")
+        self.resize(500, 142)
+        self.masterGrid = QtWidgets.QGridLayout(self)
+        self.masterGrid.setObjectName("gridLayout")
+
         self.mercury = mercury
-        self.update_gui()
+
+        # create main tab widget
+        self.tabWidget = QtWidgets.QTabWidget(self)
+        self.masterGrid.addWidget(self.tabWidget, 0, 0, 1, 1)
 
         # refresh readings every 3 sec
         self.timer = QtCore.QTimer()
@@ -626,14 +634,6 @@ class ReadingsOverview(QtWidgets.QDialog):
         self.timer.start(3000)
 
     def update_gui(self):
-        self.setObjectName("Mercury ITC Readings Overview")
-        self.resize(500, 142)
-        self.masterGrid = QtWidgets.QGridLayout(self)
-        self.masterGrid.setObjectName("gridLayout")
-
-        # create main tab widget
-        self.tabWidget = QtWidgets.QTabWidget(self)
-        self.tabWidget.setObjectName("tabWidget")
 
         # create a tab with combobox and text box for each module
         self.readings_tabs = []
@@ -643,10 +643,7 @@ class ReadingsOverview(QtWidgets.QDialog):
             self.readings_tabs.append(new_tab)
             self.tabWidget.addTab(new_tab, module.nick)
 
-        # add tab widget to main grid
-        self.masterGrid.addWidget(self.tabWidget, 0, 0, 1, 1)
         self.tabWidget.setCurrentIndex(0)
-        QtCore.QMetaObject.connectSlotsByName(self)
 
     def get_readings(self):
         """
