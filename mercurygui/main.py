@@ -590,11 +590,8 @@ class ReadingsTab(QtWidgets.QWidget):
         self.comboBox.currentIndexChanged.connect(self.get_reading)
         self.comboBox.currentIndexChanged.connect(self.get_alarms)
 
-        self.get_reading()
-        self.get_alarms()
-
     def get_reading(self):
-        """ Gets readings of selected variable in combobox."""
+        """Gets readings of selected variable in combobox."""
 
         reading = getattr(self.module, self.comboBox.currentText())
         if isinstance(reading, tuple):
@@ -656,6 +653,10 @@ class ReadingsOverview(QtWidgets.QWidget):
         if self.isVisible():
             self.tabWidget.currentWidget().get_reading()
             self.tabWidget.currentWidget().get_alarms()
+
+    def show(self):
+        self.get_readings()
+        super().show()
 
 
 class _NoModule:
