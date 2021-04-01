@@ -240,6 +240,8 @@ class ControlPanel(QtWidgets.QMainWindow):
             self.feed.readings_signal.connect(self.update_gui)
             self.feed.readings_signal.connect(self.update_plot)
             self.feed.connected_signal.connect(self.update_gui_connection)
+        else:
+            self.feed = None
 
         # set up temperature plot, adjust window margins accordingly
         self.canvas = TemperatureHistoryPlot()
@@ -338,6 +340,9 @@ class ControlPanel(QtWidgets.QMainWindow):
             self.gf3_edit.setEnabled(False)
             self.h1_edit.setEnabled(False)
             self.h2_checkbox.setEnabled(False)
+
+            if self.feed:
+                self.feed.worker.terminate = True
 
     def update_gui(self, readings):
         """
