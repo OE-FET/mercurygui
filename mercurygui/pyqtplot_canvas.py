@@ -78,7 +78,7 @@ class TemperatureHistoryPlot(pg.GraphicsView):
                 ax.setVisible(True)  # make all axes visible
                 ax.setPen(width=self.LW * 2 / 3, color=0.5)  # grey spines and ticks
                 ax.setTextPen("k")  # black text
-                ax.setStyle(maxTickLevel=2, autoExpandTextSpace=False, tickTextOffset=4)
+                ax.setStyle(maxTickLevel=1, autoExpandTextSpace=False, tickTextOffset=4)
                 if pos in ["left", "right"]:
                     ax.setStyle(tickTextWidth=text_width + 5)
 
