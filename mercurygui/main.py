@@ -618,21 +618,21 @@ class ReadingsOverview(QtWidgets.QDialog):
         super(self.__class__, self).__init__(parent=parent)
         self.setWindowTitle("Readings Overview")
         self.mercury = mercury
-        self.update_gui(self)
+        self.update_gui()
 
         # refresh readings every 3 sec
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.get_readings)
         self.timer.start(3000)
 
-    def update_gui(self, Form):
-        Form.setObjectName("Mercury ITC Readings Overview")
-        Form.resize(500, 142)
-        self.masterGrid = QtWidgets.QGridLayout(Form)
+    def update_gui(self):
+        self.setObjectName("Mercury ITC Readings Overview")
+        self.resize(500, 142)
+        self.masterGrid = QtWidgets.QGridLayout(self)
         self.masterGrid.setObjectName("gridLayout")
 
         # create main tab widget
-        self.tabWidget = QtWidgets.QTabWidget(Form)
+        self.tabWidget = QtWidgets.QTabWidget(self)
         self.tabWidget.setObjectName("tabWidget")
 
         # create a tab with combobox and text box for each module
@@ -646,7 +646,7 @@ class ReadingsOverview(QtWidgets.QDialog):
         # add tab widget to main grid
         self.masterGrid.addWidget(self.tabWidget, 0, 0, 1, 1)
         self.tabWidget.setCurrentIndex(0)
-        QtCore.QMetaObject.connectSlotsByName(Form)
+        QtCore.QMetaObject.connectSlotsByName(self)
 
     def get_readings(self):
         """
