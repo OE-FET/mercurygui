@@ -126,11 +126,13 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
 
         if connected is not self._cached_connection_status:
             # update gui to reflect changed connection status
-            self.build_tabs()
-            self.readingsDialog.build_tabs()
             self.update_gui_connection(connected)
             for panel in self.panels.values():
                 panel.update_gui_connection(connected)
+
+            if connected:
+                self.build_tabs()
+                self.readingsDialog.build_tabs()
 
         self._cached_connection_status = self.mercury.connected
 
