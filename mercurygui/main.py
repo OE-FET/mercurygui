@@ -110,7 +110,7 @@ class MercuryMonitorApp(QtWidgets.QMainWindow):
         sensor_names = self._get_nicks(MercuryITC_TEMP)
 
         if len(sensor_names) == 0:
-            sensor_names.append("Dummy")
+            sensor_names.append("...")
 
         for sensor_name in sensor_names:
             panel = ControlPanel(self.mercury, self, sensor_name)
