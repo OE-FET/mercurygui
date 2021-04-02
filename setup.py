@@ -20,7 +20,7 @@ setup(
     },
     install_requires=[
         "pyvisa",
-        "mercuryitc>=0.2.4",
+        "mercuryitc>=0.3.0",
         "numpy",
         "pyqtgraph>=0.11.0",
         "PyQt5",
