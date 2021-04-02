@@ -286,8 +286,7 @@ class ControlPanel(QtWidgets.QMainWindow):
         Updates module list after the new modules have been selected.
         """
         # find all temperature modules
-        modules = getattr(self.mercury, "modules", [])
-        tmp_modules = [m for m in modules if type(m) is MercuryITC_TEMP]
+        tmp_modules = [m for m in self.mercury.modules if type(m) is MercuryITC_TEMP]
 
         # find match for given nick
         match = next((m for m in tmp_modules if m.nick == sensor_name), None)
@@ -645,7 +644,7 @@ class ReadingsOverview(QtWidgets.QWidget):
         self.readings_tabs = []
         self.tabWidget.clear()
 
-        for module in getattr(self.mercury, "modules", []):
+        for module in self.mercury.modules:
             new_tab = ReadingsTab(self.mercury, module)
             self.readings_tabs.append(new_tab)
             self.tabWidget.addTab(new_tab, module.nick)
@@ -735,8 +734,7 @@ class ModulesDialog(QtWidgets.QDialog):
         self.temp_modules[temp_index].loop_aux = aux_nick
 
     def _get_modules_for_type(self, sensor_type):
-        modules = getattr(self.mercury, "modules", [])
-        return [m for m in modules if type(m) is sensor_type]
+        return [m for m in self.mercury.modules if type(m) is sensor_type]
 
 
 def run():
