@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="mercurygui",
-    version="3.0.1",
+    version="3.0.2",
     description="A GUI to control the Oxford instruments Mercury iTC",
     author="Sam Schott",
     author_email="ss2151@cam.ac.uk",
