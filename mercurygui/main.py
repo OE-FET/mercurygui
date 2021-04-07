@@ -234,7 +234,7 @@ class ControlPanel(QtWidgets.QMainWindow):
         self.parent = parent
 
         self.sensor_name = sensor_name
-        self.temperature = self.get_modules(sensor_name)
+        self.temperature = self.get_temperature_module(sensor_name)
         if self.temperature:
             self.feed = MercuryFeed(self.mercury, self.temperature, self.parent.UPDATE_FREQ)
             self.feed.readings_signal.connect(self.update_gui)
@@ -281,7 +281,7 @@ class ControlPanel(QtWidgets.QMainWindow):
         # set up logging to file
         self.setup_logging()
 
-    def get_modules(self, sensor_name):
+    def get_temperature_module(self, sensor_name):
         """
         Updates module list after the new modules have been selected.
         """
@@ -528,7 +528,7 @@ class ControlPanel(QtWidgets.QMainWindow):
         self.display_message(f"Gas flow = {self.gf1_edit.value()}%%")
 
     def change_flow_min(self):
-        self.gasflow.gmin = self.gf3_edit.value()
+        self.feed.gasflow.gmin = self.gf3_edit.value()
         self.display_message(f"Gas flow min = {self.gf3_edit.value()}%%")
 
     def change_flow_auto(self, checked):
