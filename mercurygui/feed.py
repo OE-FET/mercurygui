@@ -96,6 +96,7 @@ class DataCollectionWorker(QtCore.QObject):
 
         self.terminate = False
         self.refresh = refresh
+        self.readings = {}
 
     def run(self):
         while not self.terminate:
@@ -118,35 +119,33 @@ class DataCollectionWorker(QtCore.QObject):
             (m for m in self.mercury.modules if m.nick == aux_nick), None
         )
 
-        readings = {}
-
         # read temperature data
-        readings["Temp"] = self.temperature.temp[0]
-        readings["TempSetpoint"] = self.temperature.loop_tset
-        readings["TempRamp"] = self.temperature.loop_rset
-        readings["TempRampEnable"] = self.temperature.loop_rena
+        self.readings["Temp"] = self.temperature.temp[0]
+        self.readings["TempSetpoint"] = self.temperature.loop_tset
+        self.readings["TempRamp"] = self.temperature.loop_rset
+        self.readings["TempRampEnable"] = self.temperature.loop_rena
 
         # read heater data
         if self.heater:  # if heater is configured for temperature sensor
-            readings["HeaterVolt"] = self.heater.volt[0]
-            readings["HeaterAuto"] = self.temperature.loop_enab
-            readings["HeaterPercent"] = self.temperature.loop_hset
+            self.readings["HeaterVolt"] = self.heater.volt[0]
+            self.readings["HeaterAuto"] = self.temperature.loop_enab
+            self.readings["HeaterPercent"] = self.temperature.loop_hset
         else:  # if no heater is configured
-            readings["HeaterVolt"] = float("nan")
-            readings["HeaterAuto"] = "OFF"
-            readings["HeaterPercent"] = 0  # 'NaN' values are not accepted by spinbox
+            self.readings["HeaterVolt"] = float("nan")
+            self.readings["HeaterAuto"] = "OFF"
+            self.readings["HeaterPercent"] = 0  # 'NaN' values are not accepted by spinbox
 
         # read gas flow data
         if self.gasflow:  # if aux module is configured for temperature sensor
-            readings["FlowAuto"] = self.temperature.loop_faut
-            readings["FlowPercent"] = self.gasflow.perc[0]
-            readings["FlowMin"] = self.gasflow.gmin
-            readings["FlowSetpoint"] = self.temperature.loop_fset
+            self.readings["FlowAuto"] = self.temperature.loop_faut
+            self.readings["FlowPercent"] = self.gasflow.perc[0]
+            self.readings["FlowMin"] = self.gasflow.gmin
+            self.readings["FlowSetpoint"] = self.temperature.loop_fset
         else:  # if no aux module is configured
-            readings["FlowAuto"] = "OFF"
-            readings["FlowPercent"] = 0  # 'NaN' values are not accepted by spinbox
-            readings["FlowMin"] = float("nan")
-            readings["FlowSetpoint"] = float("nan")
+            self.readings["FlowAuto"] = "OFF"
+            self.readings["FlowPercent"] = 0  # 'NaN' values are not accepted by spinbox
+            self.readings["FlowMin"] = float("nan")
+            self.readings["FlowSetpoint"] = float("nan")
 
         # read alarms
         alarms = self.mercury.alarms
@@ -157,6 +156,6 @@ class DataCollectionWorker(QtCore.QObject):
             if key not in uids:
                 del alarms[key]
 
-        readings["Alarms"] = alarms
+        self.readings["Alarms"] = alarms
 
-        self.readings_signal.emit(readings)
+        self.readings_signal.emit(self.readings)

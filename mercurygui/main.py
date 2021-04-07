@@ -504,8 +504,9 @@ class ControlPanel(QtWidgets.QMainWindow):
         new_t = self.t2_edit.value()
 
         if 3.5 < new_t < 300:
-            self.display_message(f"T_setpoint = {new_t} K")
             self.temperature.loop_tset = new_t
+            self.feed.worker.readings["Temp"] = new_t
+            self.display_message(f"T_setpoint = {new_t} K")
         else:
             self.display_error(
                 "Error: Only temperature setpoints between 3.5 K and 300 K allowed."
@@ -518,43 +519,55 @@ class ControlPanel(QtWidgets.QMainWindow):
     def change_ramp_auto(self, checked):
         if checked:
             self.temperature.loop_rena = "ON"
+            self.feed.worker.readings["TempRampEnable"] = "ON"
             self.display_message("Ramp is turned ON")
         else:
             self.temperature.loop_rena = "OFF"
+            self.feed.worker.readings["TempRampEnable"] = "OFF"
             self.display_message("Ramp is turned OFF")
 
     def change_flow(self):
-        self.temperature.loop_fset = self.gf1_edit.value()
-        self.display_message(f"Gas flow = {self.gf1_edit.value()}%%")
+        flow_setpoint = self.gf1_edit.value()
+        self.temperature.loop_fset = flow_setpoint
+        self.feed.worker.readings["FlowSetpoint"] = flow_setpoint
+        self.display_message(f"Gas flow = {flow_setpoint}%")
 
     def change_flow_min(self):
-        self.feed.gasflow.gmin = self.gf3_edit.value()
-        self.display_message(f"Gas flow min = {self.gf3_edit.value()}%%")
+        gmin = self.gf3_edit.value()
+        self.feed.gasflow.gmin = gmin
+        self.feed.worker.readings["FlowMin"] = gmin
+        self.display_message(f"Gas flow min = {gmin}%")
 
     def change_flow_auto(self, checked):
         if checked:
             self.temperature.loop_faut = "ON"
+            self.feed.worker.readings["FlowAuto"] = "ON"
             self.display_message("Gas flow is automatically controlled.")
             self.gf1_edit.setReadOnly(True)
             self.gf1_edit.setEnabled(False)
         else:
             self.temperature.loop_faut = "OFF"
+            self.feed.worker.readings["FlowAuto"] = "OFF"
             self.display_message("Gas flow is manually controlled.")
             self.gf1_edit.setReadOnly(False)
             self.gf1_edit.setEnabled(True)
 
     def change_heater(self):
-        self.temperature.loop_hset = self.h1_edit.value()
-        self.display_message(f"Heater power  = {self.h1_edit.value()}%%")
+        heater_setpoint = self.h1_edit.value()
+        self.temperature.loop_hset = heater_setpoint
+        self.feed.worker.readings["HeaterPercent"] = heater_setpoint
+        self.display_message(f"Heater power  = {heater_setpoint}%")
 
     def change_heater_auto(self, checked):
         if checked:
             self.temperature.loop_enab = "ON"
+            self.feed.worker.readings["HeaterAuto"] = "ON"
             self.display_message("Heater is automatically controlled.")
             self.h1_edit.setReadOnly(True)
             self.h1_edit.setEnabled(False)
         else:
             self.temperature.loop_enab = "OFF"
+            self.feed.worker.readings["HeaterAuto"] = "OFF"
             self.display_message("Heater is manually controlled.")
             self.h1_edit.setReadOnly(False)
             self.h1_edit.setEnabled(True)
