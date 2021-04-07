@@ -49,7 +49,7 @@ class TemperatureHistoryPlot(pg.GraphicsView):
         self.layout.setSpacing(-1.0)
         self.layout.layout.setRowPreferredHeight(1, 200)
         self.layout.layout.setRowPreferredHeight(2, 20)
-        self.setBackground(None)
+        self.setStyleSheet("background: transparent")
         self.setCentralItem(self.layout)
 
         # create axes and apply formatting
