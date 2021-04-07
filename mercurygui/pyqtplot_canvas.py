@@ -49,7 +49,7 @@ class TemperatureHistoryPlot(pg.GraphicsView):
         self.layout.setSpacing(-1.0)
         self.layout.layout.setRowPreferredHeight(1, 200)
         self.layout.layout.setRowPreferredHeight(2, 20)
-        self.setStyleSheet("background: transparent")
+        self.setBackground(None)
         self.setCentralItem(self.layout)
 
         # create axes and apply formatting
@@ -177,21 +177,20 @@ class TemperatureHistoryPlot(pg.GraphicsView):
 
     def update_darkmode(self):
 
-        # get colors
-        bg_color = self.palette().color(QtGui.QPalette.Base)
-        bg_color_rgb = [bg_color.red(), bg_color.green(), bg_color.blue()]
+        dark = isDarkWindow()
+
+        # get font color
         font_color = self.palette().color(QtGui.QPalette.Text)
         font_color_rgb = [font_color.red(), font_color.green(), font_color.blue()]
 
         # set colors
-        self.setBackground(None)
         for p in [self.p0, self.p1]:
-            p.vb.setBackgroundColor(bg_color_rgb)
+            p.vb.setBackgroundColor("k" if dark else "w")
             for pos in ["bottom", "left", "top", "right"]:
                 ax = p.getAxis(pos)
                 ax.setTextPen(fn.mkColor(font_color_rgb))  # black text
 
-        c = LINE_COLOR_DARK if isDarkWindow() else LINE_COLOR_LIGHT
+        c = LINE_COLOR_DARK if dark else LINE_COLOR_LIGHT
         self.p1.getAxis("top").setPen(width=self.LW * 2 / 3, color=c)
 
 
