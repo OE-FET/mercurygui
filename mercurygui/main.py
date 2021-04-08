@@ -505,7 +505,7 @@ class ControlPanel(QtWidgets.QMainWindow):
 
         if 3.5 < new_t < 300:
             self.temperature.loop_tset = new_t
-            self.feed.worker.readings["Temp"] = new_t
+            self.feed.worker.readings["TempSetpoint"] = new_t
             self.display_message(f"T_setpoint = {new_t} K")
         else:
             self.display_error(
