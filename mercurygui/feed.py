@@ -105,6 +105,7 @@ class DataCollectionWorker(QtCore.QObject):
                 QtCore.QThread.msleep(int(self.refresh * 1000))
             except Exception:
                 self.connected_signal.emit(False)
+                self.mercury.disconnect()
 
     def get_readings(self):
 
